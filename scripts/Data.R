@@ -17,3 +17,9 @@ rm(list = ls(all.names = TRUE))
 
 require(pacman)
 p_load(tidyverse, sf, tmaptools, osmdata)
+
+chapinero<-opq(bbox = getbb("Chapinero Bogotá Colombia"))
+chapinero
+
+#chapinero_bbox <- c(-74.066598, 4.631753, -74.061713, 4.658588)
+"chapinero_osm <- osmdata::osmdata_download(bbox = chapinero_bbox, timeout = 60)
