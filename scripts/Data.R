@@ -16,4 +16,4 @@ rm(list = ls(all.names = TRUE))
 
 
 require(pacman)
-p_load()
+p_load(tidyverse, sf, tmaptools, osmdata)
