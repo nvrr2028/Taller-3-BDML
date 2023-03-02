@@ -21,7 +21,7 @@ rm(list = ls(all.names = TRUE))
 
 list.of.packages = c("pacman", "readr","tidyverse", "dplyr", "arsenal", "fastDummies", 
                      "caret", "glmnet", "MLmetrics", "skimr", "plyr", "stargazer", 
-                     "ggplot2", "corrplot", "Hmisc", "sf", "tmaptools", "osmdata")
+                     "ggplot2", "corrplot", "Hmisc", "sf", "tmaptools", "osmdata", "leaflet")
 
 new.packages = list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
@@ -45,6 +45,8 @@ available_tags() %>% head(20)
 
 available_tags("amenity")
 
+available_tags("building")
+
 #Obtenenemos las universidades
 universidades <- chapinero %>% 
   add_osm_feature(key="amenity",value="university") %>% # de las amenities disponibles, seleccionamos las universidades
@@ -57,13 +59,26 @@ ggplot()+
   geom_sf(data=puntos_universidades) +
   theme_bw()
 
-
-p_load("leaflet")
-
 leaflet() %>% 
   addTiles() %>%  #capa base
   addCircles(data=puntos_universidades, popup = ~name)
 
+
+#Obtenenemos transporte
+transporte <- chapinero %>% 
+  add_osm_feature(key="building",value="transportation") %>% # de las amenities disponibles, seleccionamos las universidades
+  osmdata_sf() #transformamos a un objeto sf
+
+puntos_transporte<-transporte$osm_point
+head(puntos_transporte)
+
+ggplot()+
+  geom_sf(data=puntos_transporte) +
+  theme_bw()
+
+leaflet() %>% 
+  addTiles() %>%  #capa base
+  addCircles(data=puntos_transporte, popup = ~name)
 #chapinero_bbox <- c(-74.066598, 4.631753, -74.061713, 4.658588)
 #chapinero_osm <- osmdata::osmdata_download(bbox = chapinero_bbox, timeout = 60)
 
