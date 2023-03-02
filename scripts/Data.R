@@ -19,11 +19,9 @@ rm(list = ls(all.names = TRUE))
 #setwd("C:/Users/lmrod/OneDrive/Documentos/GitHub/Taller-3-BDML")
 
 
-
-
 list.of.packages = c("pacman", "readr","tidyverse", "dplyr", "arsenal", "fastDummies", 
                      "caret", "glmnet", "MLmetrics", "skimr", "plyr", "stargazer", 
-                     "ggplot2", "corrplot", "Hmisc")
+                     "ggplot2", "corrplot", "Hmisc", "sf", "tmaptools", "osmdata")
 
 new.packages = list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
