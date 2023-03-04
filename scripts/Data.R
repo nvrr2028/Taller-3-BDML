@@ -64,7 +64,7 @@ ggplotly(p)
 
 # 2.2 Variables adicionales de la descripción de las propiedades --------------------- #
 
-# PARA TRAIN
+################################# PARA TRAIN ###########################################
 # Todo en minuscula
 train$description <- tolower(train$description)
 # Eliminamos tildes
@@ -74,7 +74,47 @@ train$description <- str_replace_all(train$description, "[^[:alnum:]]", " ")
 # Eliminamos espacios extras
 train$description <- gsub("\\s+", " ", str_trim(train$description))
 
-# PARA TEST
+# Dummy: chapinero ------------------------------------------------------------------
+
+cond1 <- grepl(" chapinero ", train$description)
+cond2 <- grepl("chapinero", train$description)
+cond3 <- grepl(" chapinero ", train$title)
+cond4 <- grepl("chapinero", train$title)
+
+filtro <- cond1 | cond2 | cond3 | cond4
+train$Chapinero <- ifelse()
+sum(filtro==TRUE)
+# Metros cuadrados ------------------------------------------------------------------
+mts11 <- as.numeric(str_extract(train$description, "(\\d)+(?= mts)"))
+mts12 <- as.numeric(str_extract(train$description, "(\\d)+(?=mts)"))
+mts13 <- as.numeric(str_extract(train$description, "(\\d)+(?=  mts)"))
+mts21 <- as.numeric(str_extract(train$description, "(\\d)+(?= m2)"))
+mts22 <- as.numeric(str_extract(train$description, "(\\d)+(?=m2)"))
+mts23 <- as.numeric(str_extract(train$description, "(\\d)+(?=  m2)"))
+mts31 <- as.numeric(str_extract(train$description, "(\\d)+(?= metros cuadrados)"))
+mts32 <- as.numeric(str_extract(train$description, "(\\d)+(?=metros cuadrados)"))
+mts33 <- as.numeric(str_extract(train$description, "(\\d)+(?=  metros cuadrados)"))
+mts41 <- as.numeric(str_extract(train$description, "(\\d)+(?=metros)"))
+mts42 <- as.numeric(str_extract(train$description, "(\\d)+(?= metros)"))
+mts43 <- as.numeric(str_extract(train$description, "(\\d)+(?=  metros)"))
+mts51 <- as.numeric(str_extract(train$description, "(\\d)+(?= mt)"))
+mts52 <- as.numeric(str_extract(train$description, "(\\d)+(?=mt)"))
+mts53 <- as.numeric(str_extract(train$description, "(\\d)+(?=  mt)"))
+mts61 <- as.numeric(str_extract(train$description, "(\\d)+(?= mtrs)"))
+mts62 <- as.numeric(str_extract(train$description, "(\\d)+(?=mtrs)"))
+mts63 <- as.numeric(str_extract(train$description, "(\\d)+(?=  mtrs)"))
+mts71 <- as.numeric(str_extract(train$description, "(\\d)+(?= m )"))
+mts72 <- as.numeric(str_extract(train$description, "(\\d)+(?=m )"))
+mts73 <- as.numeric(str_extract(train$description, "(\\d)+(?=  m )"))
+mts_train <- as.numeric(rbind(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32, 
+                              mts33, mts41, mts42, mts43, mts51, mts52, mts53, 
+                              mts61, mts62, mts63, mts71, mts72, mts73))
+train$surface_covered <- ifelse(is.na(train$surface_covered), mts_train, train$surface_covered)
+
+
+
+
+################################# PARA TEST ###########################################
 # Todo en minuscula
 test$description <- tolower(test$description)
 # Eliminamos tildes
@@ -84,15 +124,33 @@ test$description <- str_replace_all(test$description, "[^[:alnum:]]", " ")
 # Eliminamos espacios extras
 test$description <- gsub("\\s+", " ", str_trim(test$description))
 
-# Metros cuadrados
-mts1 <- as.numeric(str_extract(train$description, "(\\d)+(?= mts)"))
-mts2 <- as.numeric(str_extract(train$description, "(\\d)+(?=mts)"))
-mts3 <- as.numeric(str_extract(train$description, "(\\d)+(?= m2)"))
-mts4 <- as.numeric(str_extract(train$description, "(\\d)+(?=m2)"))
-mts5 <- as.numeric(str_extract(train$description, "(\\d)+(?= metros cuadrados)"))
-mts6 <- as.numeric(str_extract(train$description, "(\\d)+(?=metros cuadrados)"))
-mts7 <- as.numeric(str_extract(train$description, "(\\d)+(?=metros)"))
-mts8 <- as.numeric(str_extract(train$description, "(\\d)+(?= metros)"))
+# Metros cuadrados ------------------------------------------------------------------
+mts11 <- as.numeric(str_extract(test$description, "(\\d)+(?= mts)"))
+mts12 <- as.numeric(str_extract(test$description, "(\\d)+(?=mts)"))
+mts13 <- as.numeric(str_extract(test$description, "(\\d)+(?=  mts)"))
+mts21 <- as.numeric(str_extract(test$description, "(\\d)+(?= m2)"))
+mts22 <- as.numeric(str_extract(test$description, "(\\d)+(?=m2)"))
+mts23 <- as.numeric(str_extract(test$description, "(\\d)+(?=  m2)"))
+mts31 <- as.numeric(str_extract(test$description, "(\\d)+(?= metros cuadrados)"))
+mts32 <- as.numeric(str_extract(test$description, "(\\d)+(?=metros cuadrados)"))
+mts33 <- as.numeric(str_extract(test$description, "(\\d)+(?=  metros cuadrados)"))
+mts41 <- as.numeric(str_extract(test$description, "(\\d)+(?=metros)"))
+mts42 <- as.numeric(str_extract(test$description, "(\\d)+(?= metros)"))
+mts43 <- as.numeric(str_extract(test$description, "(\\d)+(?=  metros)"))
+mts51 <- as.numeric(str_extract(test$description, "(\\d)+(?= mt)"))
+mts52 <- as.numeric(str_extract(test$description, "(\\d)+(?=mt)"))
+mts53 <- as.numeric(str_extract(test$description, "(\\d)+(?=  mt)"))
+mts61 <- as.numeric(str_extract(test$description, "(\\d)+(?= mtrs)"))
+mts62 <- as.numeric(str_extract(test$description, "(\\d)+(?=mtrs)"))
+mts63 <- as.numeric(str_extract(test$description, "(\\d)+(?=  mtrs)"))
+mts71 <- as.numeric(str_extract(test$description, "(\\d)+(?= m )"))
+mts72 <- as.numeric(str_extract(test$description, "(\\d)+(?=m )"))
+mts73 <- as.numeric(str_extract(test$description, "(\\d)+(?=  m )"))
+mts_test <- as.numeric(rbind(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32, 
+                             mts33, mts41, mts42, mts43, mts51, mts52, mts53, 
+                             mts61, mts62, mts63, mts71, mts72, mts73))
+test$surface_covered <- ifelse(is.na(test$surface_covered), mts_test, test$surface_covered)
+
 
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
 
@@ -120,16 +178,16 @@ Parques_geometria <- Parques_sf$osm_polygons %>%
 cent_parques <- gCentroid(as(Parques_geometria$geometry, "Spatial"), byid = T)
 
 # Ahora vamos a calcular la distancia de cada apartamento al centroide de cada parque
-train_parques_sf <- st_as_sf(train, coords = c("lon", "lat"))
-st_crs(train_parques_sf) <- 4326
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
 cent_parques_sf <- st_as_sf(cent_parques, coords = c("x", "y"))
 # Esto va a ser demorado!
-dist_matrix_parques <- st_distance(x = train_parques_sf, y = cent_parques_sf)
+disttrain_matrix_parques <- st_distance(x = train_parques_sf, y = cent_parques_sf)
 
 # Encontramos la distancia mínima a un parque
-dist_min_parques <- apply(dist_matrix_parques, 1, min)
+dist_min_parques <- apply(disttrain_matrix_parques, 1, min)
 train$distancia_parque <- dist_min_parques
-train_sf$distancia_parque <- dist_min_parques
+train_parques_sf$distancia_parque <- dist_min_parques
 
 # Distancia a un gimnasio ----------------------------------------------------------
 Gym <- opq(bbox = getbb("UPZ Chapinero, Bogota")) %>%
@@ -146,13 +204,12 @@ train_sf <- st_as_sf(train, coords = c("lon", "lat"))
 st_crs(train_sf) <- 4326
 cent_gym_sf <- st_as_sf(cent_gym, coords = c("x", "y"))
 # Esto va a ser demorado!
-dist_matrix_gym <- st_distance(x = train_sf, y = cent_gym_sf)
+disttrain_matrix_gym <- st_distance(x = train_sf, y = cent_gym_sf)
 
 # Encontramos la distancia mínima a un parque
-dist_min_gym <- apply(dist_matrix_gym, 1, min)
-train$distancia_parque <- dist_min_gym
-train_sf$distancia_parque <- dist_min_gym
-
+dist_min_gym <- apply(disttrain_matrix_gym, 1, min)
+train$distancia_gym <- dist_min_gym
+train_sf$distancia_gym <- dist_min_gym
 
 #Obtenenemos las universidades
 universidades <- chapinero %>% 
@@ -191,8 +248,38 @@ leaflet() %>%
 
 ################################# PARA TEST ###########################################
 
+# Distancia a parques --------------------------------------------------------------
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada parque
+test_sf <- st_as_sf(test, coords = c("lon", "lat"))
+st_crs(test_sf) <- 4326
+cent_parques_sf <- st_as_sf(cent_parques, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttest_matrix_parques <- st_distance(x = test_sf, y = cent_parques_sf)
+
+# Encontramos la distancia mínima a un parque
+disttest_min_parques <- apply(disttest_matrix_parques, 1, min)
+test$distancia_parque <- disttest_min_parques
+test_sf$distancia_parque <- disttest_min_parques
+
+# Distancia a un gimnasio ----------------------------------------------------------
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada parque
+test_sf <- st_as_sf(test, coords = c("lon", "lat"))
+st_crs(test_sf) <- 4326
+cent_gym_sf <- st_as_sf(cent_gym, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttest_matrix_gym <- st_distance(x = test_sf, y = cent_gym_sf)
+
+# Encontramos la distancia mínima a un parque
+disttest_min_gym <- apply(disttest_matrix_gym, 1, min)
+test$distancia_gym <- disttest_min_gym
+test_sf$distancia_gym <- disttest_min_gym
+
 # ------------------------------------------------------------------------------------ #
 # 3. Estadísticas descriptivas
 # ------------------------------------------------------------------------------------ #
+
+
 
 
