@@ -223,7 +223,7 @@ head(puntos_cai)
 CAI<-cai$osm_polygons 
 ggplot()+
   geom_sf(data=CAI) +
-  theme_bw
+  theme_bw()
 
 ## ver cais bgt
 
@@ -243,7 +243,7 @@ head(puntos_super)
 SM<-super$osm_polygons 
 ggplot()+
   geom_sf(data=SM) +
-  theme_bw
+  theme_bw()
 
 ## ver supermercados en bgt
 leaflet() %>% 
@@ -261,20 +261,12 @@ head(puntos_cc)
 CC<-cc$osm_polygons 
 ggplot()+
   geom_sf(data=CC) +
-  theme_bw
+  theme_bw()
 
 ## ver Centroscomerciales en bgt
 leaflet() %>% 
   addTiles() %>%  #capa base
   addPolygons(data=CC) #capa SM
-
-
-#importamos la librería
-p_load("leaflet")
-
-leaflet() %>% 
-  addTiles() %>%  #capa base
-  addPolygons(data=ML) #capa edificio ML
 
 ################################# PARA TRAIN ###########################################
 
