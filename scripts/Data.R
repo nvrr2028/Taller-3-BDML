@@ -304,6 +304,24 @@ leaflet() %>%
   addTiles() %>%  #capa base
   addPolygons(data=CAI) #capa CAI
 
+##### Bar bgt
+bar <- bogota %>% 
+  add_osm_feature(key="amenity",value="bar") %>% # de las amenities disponibles, seleccionamos las universidades
+  osmdata_sf() #transformamos a un objeto sf
+
+puntos_bar<-bar$osm_point
+head(puntos_bar)
+
+BARES<-bar$osm_polygons 
+ggplot()+
+  geom_sf(data=BARES) +
+  theme_bw()
+
+## ver bares en bgt
+
+leaflet() %>% 
+  addTiles() %>%  #capa base
+  addPolygons(data=BARES) #capa bares
 
 ##### supermercados bgt
 super <- bogota %>% 
@@ -363,7 +381,7 @@ disttrain_matrix_parques <- st_distance(x = train_sf, y = cent_parques_sf)
 # Encontramos la distancia mínima a un parque
 dist_min_parques <- apply(disttrain_matrix_parques, 1, min)
 train$distancia_parque <- dist_min_parques
-train_parques_sf$distancia_parque <- dist_min_parques
+train_sf$distancia_parque <- dist_min_parques
 
 # Distancia a un gimnasio ----------------------------------------------------------
 Gym <- opq(bbox = getbb("Bogota Colombia")) %>%
@@ -387,7 +405,117 @@ dist_min_gym <- apply(disttrain_matrix_gym, 1, min)
 train$distancia_gym <- dist_min_gym
 train_sf$distancia_gym <- dist_min_gym
 
-#Obtenenemos las universidades
+# Distancia a estaciones de TR ----------------------------------------------------------
+trasmi <- opq(bbox = getbb("Bogota Colombia")) %>%
+  add_osm_feature(key = "amenity" , value = "bus_station") 
+trasmi_sf <- osmdata_sf(trasmi)
+trasmi_geometria <- trasmi_sf$osm_polygons %>% 
+  select(osm_id, name)
+
+# Calculamos el centroide de cada estacion de trasmi
+cent_trasmi <- gCentroid(as(trasmi_geometria$geometry, "Spatial"), byid = T)
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de estacion de trasmi
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+cent_trasmi_sf <- st_as_sf(cent_trasmi, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttrain_matrix_trasmi <- st_distance(x = train_sf, y = cent_trasmi_sf)
+
+# Encontramos la distancia mínima a una estacion de trasmi
+dist_min_trasmi <- apply(disttrain_matrix_trasmi, 1, min)
+train$distancia_trasmi <- dist_min_trasmi
+train_sf$distancia_trasmi <- dist_min_trasmi
+
+# Distancia a estaciones de policia  ----------------------------------------------------------
+cai <- opq(bbox = getbb("Bogota Colombia")) %>%
+  add_osm_feature(key = "amenity" , value = "police") 
+cai_sf <- osmdata_sf(cai)
+cai_geometria <- cai_sf$osm_polygons %>% 
+  select(osm_id, name)
+
+# Calculamos el centroide de cada cai
+cent_cai <- gCentroid(as(cai_geometria$geometry, "Spatial"), byid = T)
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada cai
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+cent_cai_sf <- st_as_sf(cent_cai, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttrain_matrix_cai <- st_distance(x = train_sf, y = cent_cai_sf)
+
+# Encontramos la distancia mínima a un cai
+dist_min_cai <- apply(disttrain_matrix_cai, 1, min)
+train$distancia_cai <- dist_min_cai
+train_sf$distancia_cai <- dist_min_cai
+
+# Distancia a centros comerciales  ----------------------------------------------------------
+cc <- opq(bbox = getbb("Bogota Colombia")) %>%
+  add_osm_feature(key = "shop" , value = "mall") 
+cc_sf <- osmdata_sf(cc)
+cc_geometria <- cc_sf$osm_polygons %>% 
+  select(osm_id, name)
+
+# Calculamos el centroide de cada centro comercial
+cent_cc <- gCentroid(as(cc_geometria$geometry, "Spatial"), byid = T)
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada centro comercial
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+cent_cc_sf <- st_as_sf(cent_cc, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttrain_matrix_cc <- st_distance(x = train_sf, y = cent_cc_sf)
+
+# Encontramos la distancia mínima a un centro comercial
+dist_min_cc <- apply(disttrain_matrix_cc, 1, min)
+train$distancia_cc <- dist_min_cc
+train_sf$distancia_cc <- dist_min_cc
+
+# Distancia a centros bares ----------------------------------------------------------
+bar <- opq(bbox = getbb("Bogota Colombia")) %>%
+  add_osm_feature(key = "amenity" , value = "bar") 
+bar_sf <- osmdata_sf(bar)
+bar_geometria <- bar_sf$osm_polygons %>% 
+  select(osm_id, name)
+
+# Calculamos el centroide de cada bar
+cent_bar <- gCentroid(as(bar_geometria$geometry, "Spatial"), byid = T)
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada bar
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+cent_bar_sf <- st_as_sf(cent_bar, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttrain_matrix_bar <- st_distance(x = train_sf, y = cent_bar_sf)
+
+# Encontramos la distancia mínima a un bar
+dist_min_bar <- apply(disttrain_matrix_bar, 1, min)
+train$distancia_bar <- dist_min_bar
+train_sf$distancia_bar <- dist_min_bar
+
+# Distancia a supermercados ----------------------------------------------------------
+SM <- opq(bbox = getbb("Bogota Colombia")) %>%
+  add_osm_feature(key = "shop" , value = "supermarket") 
+SM_sf <- osmdata_sf(SM)
+SM_geometria <- SM_sf$osm_polygons %>% 
+  select(osm_id, name)
+
+# Calculamos el centroide de cada bar
+cent_SM <- gCentroid(as(SM_geometria$geometry, "Spatial"), byid = T)
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada bar
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+cent_SM_sf <- st_as_sf(cent_SM, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttrain_matrix_SM <- st_distance(x = train_sf, y = cent_SM_sf)
+
+# Encontramos la distancia mínima a un bar
+dist_min_SM <- apply(disttrain_matrix_SM, 1, min)
+train$distancia_SM <- dist_min_SM
+train_sf$distancia_SM <- dist_min_SM
+
+#Obtenenemos las universidades------------------------------------------------------------
 universidades <- chapinero %>% 
   add_osm_feature(key="amenity",value="university") %>% # de las amenities disponibles, seleccionamos las universidades
   osmdata_sf() #transformamos a un objeto sf
@@ -437,6 +565,75 @@ disttest_matrix_parques <- st_distance(x = test_sf, y = cent_parques_sf)
 disttest_min_parques <- apply(disttest_matrix_parques, 1, min)
 test$distancia_parque <- disttest_min_parques
 test_sf$distancia_parque <- disttest_min_parques
+
+# Distancia a trasmi --------------------------------------------------------------
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de estacion de trasmi
+test_sf <- st_as_sf(test, coords = c("lon", "lat"))
+st_crs(test_sf) <- 4326
+cent_trasmi_sf <- st_as_sf(cent_trasmi, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttest_matrix_trasmi <- st_distance(x = test_sf, y = cent_trasmi_sf)
+
+# Encontramos la distancia mínima a una estacion de trasmi
+disttest_min_trasmi <- apply(disttest_matrix_trasmi, 1, min)
+test$distancia_trasmi <- disttest_min_trasmi
+test_sf$distancia_trasmi <- disttest_min_trasmi
+# Distancia a cai --------------------------------------------------------------
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de estacion de policia 
+test_sf <- st_as_sf(test, coords = c("lon", "lat"))
+st_crs(test_sf) <- 4326
+cent_cai_sf <- st_as_sf(cent_cai, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttest_matrix_cai <- st_distance(x = test_sf, y = cent_cai_sf)
+
+# Encontramos la distancia mínima a una estacion de policia
+disttest_min_cai <- apply(disttest_matrix_cai, 1, min)
+test$distancia_cai <- disttest_min_cai
+test_sf$distancia_cai <- disttest_min_cai
+
+# Distancia a un centro comercial --------------------------------------------------------------
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de un centro comercial
+test_sf <- st_as_sf(test, coords = c("lon", "lat"))
+st_crs(test_sf) <- 4326
+cent_cc_sf <- st_as_sf(cent_cc, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttest_matrix_cc <- st_distance(x = test_sf, y = cent_cc_sf)
+
+# Encontramos la distancia mínima a un cetro comercial
+disttest_min_cc <- apply(disttest_matrix_cc, 1, min)
+test$distancia_cc <- disttest_min_cc
+test_sf$distancia_cc <- disttest_min_cc
+
+# Distancia a un bar --------------------------------------------------------------
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de un bar
+test_sf <- st_as_sf(test, coords = c("lon", "lat"))
+st_crs(test_sf) <- 4326
+cent_bar_sf <- st_as_sf(cent_bar, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttest_matrix_bar <- st_distance(x = test_sf, y = cent_bar_sf)
+
+# Encontramos la distancia mínima a un bar
+disttest_min_bar <- apply(disttest_matrix_bar, 1, min)
+test$distancia_bar <- disttest_min_bar
+test_sf$distancia_bar <- disttest_min_bar
+
+# Distancia a un supermercado --------------------------------------------------------------
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de un supermercado
+test_sf <- st_as_sf(test, coords = c("lon", "lat"))
+st_crs(test_sf) <- 4326
+cent_SM_sf <- st_as_sf(cent_SM, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttest_matrix_SM <- st_distance(x = test_sf, y = cent_SM_sf)
+
+# Encontramos la distancia mínima a un supermercado
+disttest_min_SM <- apply(disttest_matrix_SM, 1, min)
+test$distancia_SM <- disttest_SM_bar
+test_sf$distancia_SM <- disttest_SM_bar
 
 # Distancia a un gimnasio ----------------------------------------------------------
 
