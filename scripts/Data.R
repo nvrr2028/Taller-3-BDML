@@ -42,15 +42,64 @@ train_bog <- read_csv("./data/train.csv")
 # Test 
 test_bog <- read_csv("./data/test.csv")
 
-# ------------------------------------------------------------------------------------ #
-# Compilar la base de datos
-# ------------------------------------------------------------------------------------ #
+# 2.1 Limpieza de datos -------------------------------------------------------------- #
+train <- train_bog
+test <- test_bog
+
+# ¿Cómo se comporta el precio de venta? 
+summary(train$price) %>%
+  as.matrix() %>%
+  as.data.frame() %>%
+  mutate(V1 = scales::dollar(V1))
+
+p <- ggplot(train) +
+  geom_boxplot(aes(y = price), fill = "darkblue", alpha = 0.4) +
+  labs(y = "Valor del mt2 (log-scale)") +
+  scale_y_log10(labels = scales::number) +
+  scale_x_discrete() +
+  theme_bw()
+ggplotly(p)
+
+# No hay datos atipicos que deban eliminarse 
+
+# 2.2 Variables adicionales de la descripción de las propiedades --------------------- #
+
+# PARA TRAIN
+# Todo en minuscula
+train$description <- tolower(train$description)
+# Eliminamos tildes
+train$description <- iconv(train$description, from = "UTF-8", to = "ASCII//TRANSLIT")
+# Eliminamos caracteres especiales
+train$description <- str_replace_all(train$description, "[^[:alnum:]]", " ")
+# Eliminamos espacios extras
+train$description <- gsub("\\s+", " ", str_trim(train$description))
+
+# PARA TEST
+# Todo en minuscula
+test$description <- tolower(test$description)
+# Eliminamos tildes
+test$description <- iconv(test$description, from = "UTF-8", to = "ASCII//TRANSLIT")
+# Eliminamos caracteres especiales
+test$description <- str_replace_all(test$description, "[^[:alnum:]]", " ")
+# Eliminamos espacios extras
+test$description <- gsub("\\s+", " ", str_trim(test$description))
+
+# Metros cuadrados
+mts1 <- as.numeric(str_extract(train$description, "(\\d)+(?= mts)"))
+mts2 <- as.numeric(str_extract(train$description, "(\\d)+(?=mts)"))
+mts3 <- as.numeric(str_extract(train$description, "(\\d)+(?= m2)"))
+mts4 <- as.numeric(str_extract(train$description, "(\\d)+(?=m2)"))
+mts5 <- as.numeric(str_extract(train$description, "(\\d)+(?= metros cuadrados)"))
+mts6 <- as.numeric(str_extract(train$description, "(\\d)+(?=metros cuadrados)"))
+mts7 <- as.numeric(str_extract(train$description, "(\\d)+(?=metros)"))
+mts8 <- as.numeric(str_extract(train$description, "(\\d)+(?= metros)"))
+
+# 2.3 Variables adicionales de fuentes externas -------------------------------------- #
 
 available_features() %>% head(20)
 available_tags() %>% head(20)
 
 available_tags("amenity")
-
 available_tags("building")
 
 #Obtenenemos las universidades
