@@ -263,20 +263,21 @@ available_tags("leisure")
 chapinero <- getbb(place_name="UPZ Chapinero, Bogota",
                    featuretype="boundary:administrative",
                    format_out="sf_polygon") %>% .$multipolygon
+
 p_load("omsdata")
 bogota<-opq(bbox = getbb("Bogotá Colombia"))
 bogota
 
 p_load("leaflet")
-##### trasmi bgt
-trasmi <- bogota %>% 
+##### transmi bgt
+transmi <- bogota %>% 
   add_osm_feature(key="amenity",value="bus_station") %>% # de las amenities disponibles, seleccionamos las universidades
   osmdata_sf() #transformamos a un objeto sf
 
-puntos_trasmi<-trasmi$osm_point
-head(puntos_trasmi)
+puntos_transmi<-transmi$osm_point
+head(puntos_transmi)
 
-TR<-trasmi$osm_polygons 
+TR<-transmi$osm_polygons 
 ggplot()+
   geom_sf(data=TR) +
   theme_bw()
@@ -408,26 +409,26 @@ train$distancia_gym <- dist_min_gym
 train_sf$distancia_gym <- dist_min_gym
 
 # Distancia a estaciones de TR ----------------------------------------------------------
-trasmi <- opq(bbox = getbb("Bogota Colombia")) %>%
+transmi <- opq(bbox = getbb("Bogota Colombia")) %>%
   add_osm_feature(key = "amenity" , value = "bus_station") 
-trasmi_sf <- osmdata_sf(trasmi)
-trasmi_geometria <- trasmi_sf$osm_polygons %>% 
+transmi_sf <- osmdata_sf(transmi)
+transmi_geometria <- transmi_sf$osm_polygons %>% 
   select(osm_id, name)
 
-# Calculamos el centroide de cada estacion de trasmi
-cent_trasmi <- gCentroid(as(trasmi_geometria$geometry, "Spatial"), byid = T)
+# Calculamos el centroide de cada estacion de transmi
+cent_transmi <- gCentroid(as(transmi_geometria$geometry, "Spatial"), byid = T)
 
-# Ahora vamos a calcular la distancia de cada apartamento al centroide de estacion de trasmi
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de estacion de transmi
 train_sf <- st_as_sf(train, coords = c("lon", "lat"))
 st_crs(train_sf) <- 4326
-cent_trasmi_sf <- st_as_sf(cent_trasmi, coords = c("x", "y"))
+cent_transmi_sf <- st_as_sf(cent_transmi, coords = c("x", "y"))
 # Esto va a ser demorado!
-disttrain_matrix_trasmi <- st_distance(x = train_sf, y = cent_trasmi_sf)
+disttrain_matrix_transmi <- st_distance(x = train_sf, y = cent_transmi_sf)
 
-# Encontramos la distancia mínima a una estacion de trasmi
-dist_min_trasmi <- apply(disttrain_matrix_trasmi, 1, min)
-train$distancia_trasmi <- dist_min_trasmi
-train_sf$distancia_trasmi <- dist_min_trasmi
+# Encontramos la distancia mínima a una estacion de transmi
+dist_min_transmi <- apply(disttrain_matrix_transmi, 1, min)
+train$distancia_transmi <- dist_min_transmi
+train_sf$distancia_transmi <- dist_min_transmi
 
 # Distancia a estaciones de policia  ----------------------------------------------------------
 cai <- opq(bbox = getbb("Bogota Colombia")) %>%
@@ -601,19 +602,19 @@ disttest_min_parques <- apply(disttest_matrix_parques, 1, min)
 test$distancia_parque <- disttest_min_parques
 test_sf$distancia_parque <- disttest_min_parques
 
-# Distancia a trasmi --------------------------------------------------------------
+# Distancia a transmi --------------------------------------------------------------
 
-# Ahora vamos a calcular la distancia de cada apartamento al centroide de estacion de trasmi
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de estacion de transmi
 test_sf <- st_as_sf(test, coords = c("lon", "lat"))
 st_crs(test_sf) <- 4326
-cent_trasmi_sf <- st_as_sf(cent_trasmi, coords = c("x", "y"))
+cent_transmi_sf <- st_as_sf(cent_transmi, coords = c("x", "y"))
 # Esto va a ser demorado!
-disttest_matrix_trasmi <- st_distance(x = test_sf, y = cent_trasmi_sf)
+disttest_matrix_transmi <- st_distance(x = test_sf, y = cent_transmi_sf)
 
-# Encontramos la distancia mínima a una estacion de trasmi
-disttest_min_trasmi <- apply(disttest_matrix_trasmi, 1, min)
-test$distancia_trasmi <- disttest_min_trasmi
-test_sf$distancia_trasmi <- disttest_min_trasmi
+# Encontramos la distancia mínima a una estacion de transmi
+disttest_min_transmi <- apply(disttest_matrix_transmi, 1, min)
+test$distancia_transmi <- disttest_min_transmi
+test_sf$distancia_transmi <- disttest_min_transmi
 # Distancia a cai --------------------------------------------------------------
 
 # Ahora vamos a calcular la distancia de cada apartamento al centroide de estacion de policia 
