@@ -103,9 +103,14 @@ mts63 <- as.numeric(str_extract(train$description, "(\\d)+(?=  mtrs)"))
 mts71 <- as.numeric(str_extract(train$description, "(\\d)+(?= m )"))
 mts72 <- as.numeric(str_extract(train$description, "(\\d)+(?=m )"))
 mts73 <- as.numeric(str_extract(train$description, "(\\d)+(?=  m )"))
-mts_train <- as.numeric(cbind(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32, 
-                              mts33, mts41, mts42, mts43, mts51, mts52, mts53, 
-                              mts61, mts62, mts63, mts71, mts72, mts73))
+library(kimisc)
+mts_train <- c(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32,
+               mts33, mts41, mts42, mts43, mts51, mts52, mts53, 
+               mts61, mts62, mts63, mts71, mts72, mts73)
+mts_train$factor <- append(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32,
+                                                   mts33, mts41, mts42, mts43, mts51, mts52, mts53, 
+                                                   mts61, mts62, mts63, mts71, mts72, mts73)
+
 train$surface_covered <- ifelse(is.na(train$surface_covered), mts_train, train$surface_covered)
 
 # Dummy: terraza o balcon ------------------------------------------------------------------
@@ -246,7 +251,6 @@ parq102 <- as.numeric(str_extract(test$description, "(\\d)+(?=patios)"))
 parq103 <- as.numeric(str_extract(test$description, "(\\d)+(?=  patios)"))
 
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
-
 available_features() %>% head(20)
 available_tags() %>% head(20)
 
@@ -362,7 +366,7 @@ train_sf <- st_as_sf(train, coords = c("lon", "lat"))
 st_crs(train_sf) <- 4326
 cent_parques_sf <- st_as_sf(cent_parques, coords = c("x", "y"))
 # Esto va a ser demorado!
-disttrain_matrix_parques <- st_distance(x = train_parques_sf, y = cent_parques_sf)
+disttrain_matrix_parques <- st_distance(x = train_sf, y = cent_parques_sf)
 
 # Encontramos la distancia mínima a un parque
 dist_min_parques <- apply(disttrain_matrix_parques, 1, min)
@@ -379,14 +383,14 @@ Gym_geometria <- Gym_sf$osm_polygons %>%
 # Calculamos el centroide de cada parque
 cent_gym <- gCentroid(as(Parques_geometria$geometry, "Spatial"), byid = T)
 
-# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada parque
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada gimnasio
 train_sf <- st_as_sf(train, coords = c("lon", "lat"))
 st_crs(train_sf) <- 4326
 cent_gym_sf <- st_as_sf(cent_gym, coords = c("x", "y"))
 # Esto va a ser demorado!
 disttrain_matrix_gym <- st_distance(x = train_sf, y = cent_gym_sf)
 
-# Encontramos la distancia mínima a un parque
+# Encontramos la distancia mínima a un gimnasio
 dist_min_gym <- apply(disttrain_matrix_gym, 1, min)
 train$distancia_gym <- dist_min_gym
 train_sf$distancia_gym <- dist_min_gym
