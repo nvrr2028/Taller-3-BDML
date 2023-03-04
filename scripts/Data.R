@@ -116,9 +116,9 @@ train$terraza <- ifelse(dumm1_train==TRUE, 1, 0)
 dumm2_train <- grepl("salon comunal|saln comunal|bbq|piscina|piscinas|zona comun|zona comn|zona comn|pin pon|ascensor|ascensores", train$description)
 train$social <- ifelse(dumm2_train==TRUE, 1, 0)
 
-# Dummy: espacios sociales ------------------------------------------------------------------
-dumm3_train <- grepl("garaje|garajes|sotano|sotanos|zona comun|zona comn|zona comn|pin pon|ascensor|", train$description)
-train$terraza <- ifelse(dumm1_train==TRUE, 1, 0)
+# Dummy: parqueadero ------------------------------------------------------------------
+dumm3_train <- grepl("garaje|garajes|sotano|sotanos|parqueadero|parqueaderos|cochera|cocheras", train$description)
+train$terraza <- ifelse(dumm3_train==TRUE, 1, 0)
 
 ################################# PARA TEST ###########################################
 # Todo en minuscula
@@ -166,7 +166,15 @@ test$surface_covered <- ifelse(is.na(test$surface_covered), mts_test, test$surfa
 
 # Dummy: terraza o balcon ------------------------------------------------------------------
 dumm1_test <- grepl("balcon|balcn|terraza|mirador", test$description)
-test$terraza <- ifelse(dumm1_test==TRUE, 1, 0)
+train$terraza <- ifelse(dumm1_train==TRUE, 1, 0)
+
+# Dummy: espacios sociales ------------------------------------------------------------------
+dumm2_test <- grepl("salon comunal|saln comunal|bbq|piscina|piscinas|zona comun|zona comn|zona comn|pin pon|ascensor|ascensores", test$description)
+test$social <- ifelse(dumm2_test==TRUE, 1, 0)
+
+# Dummy: parqueadero ------------------------------------------------------------------
+dumm3_test <- grepl("garaje|garajes|sotano|sotanos|parqueadero|parqueaderos|cochera|cocheras", test$description)
+test$terraza <- ifelse(dumm3_test==TRUE, 1, 0)
 
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
 
