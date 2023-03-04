@@ -172,8 +172,8 @@ for (j in 1:nrow(train)) {
     }
   }
 }
-train$cat_parqueadero <- as.factor(train$cat_parqueadero)
 train$cat_parqueadero[train$cat_parqueadero>10] <- NA
+train$cat_parqueadero <- as.factor(train$cat_parqueadero)
 sum(is.na(train$cat_parqueadero))
 n <- train %>% 
   group_by(cat_parqueadero) %>%
@@ -230,6 +230,7 @@ for (j in 1:nrow(test)) {
     }
   }
 }
+sum(is.na(test$surface_covered))
 
 # Dummy: terraza o balcon ------------------------------------------------------------------
 dumm1_test <- grepl("balcon|balcn|terraza|mirador", test$description)
@@ -287,8 +288,8 @@ for (j in 1:nrow(test)) {
     }
   }
 }
-test$cat_parqueadero <- as.factor(test$cat_parqueadero)
 test$cat_parqueadero[test$cat_parqueadero>10] <- NA
+test$cat_parqueadero <- as.factor(test$cat_parqueadero)
 sum(is.na(test$cat_parqueadero))
 nn <- test %>% 
   group_by(cat_parqueadero) %>%
@@ -583,7 +584,7 @@ disttrain_matrix_colegios <- st_distance(x = train_sf, y = cent_colegios_sf)
 # Encontramos la distancia mínima a un colegio
 dist_min_colegios <- apply(disttrain_matrix_colegios, 1, min)
 train$distancia_colegios <- dist_min_colegios
-train_colegios_sf$distancia_colegios <- dist_min_colegios
+train_sf$distancia_colegios <- dist_min_colegios
 
 # Distancia a universidades ----------------------------------------------------------
 universidades <- opq(bbox = getbb("Bogota Colombia")) %>%
@@ -627,7 +628,7 @@ disttrain_matrix_hospitales <- st_distance(x = train_sf, y = cent_hospitales_sf)
 # Encontramos la distancia mínima a un hospital
 dist_min_hospitales <- apply(disttrain_matrix_hospitales, 1, min)
 train$distancia_hospitales <- dist_min_hospitales
-train_hospitales_sf$distancia_hospitales <- dist_min_universidades
+train_sf$distancia_hospitales <- dist_min_hospitales
 
 
 ################################# PARA TEST ###########################################
@@ -741,7 +742,7 @@ disttest_matrix_colegios <- st_distance(x = test_sf, y = cent_colegios_sf)
 # Encontramos la distancia mínima a un colegio
 dist_min_colegios <- apply(disttest_matrix_colegios, 1, min)
 test$distancia_colegios <- dist_min_colegios
-test_colegios_sf$distancia_colegios <- dist_min_colegios
+test_sf$distancia_colegios <- dist_min_colegios
 
 # Distancia a universidades ----------------------------------------------------------
 
@@ -755,7 +756,7 @@ disttest_matrix_universidades <- st_distance(x = test_sf, y = cent_universidades
 # Encontramos la distancia mínima a un universidad
 dist_min_universidades <- apply(disttest_matrix_universidades, 1, min)
 test$distancia_universidades <- dist_min_universidades
-test_universidades_sf$distancia_universidades <- dist_min_universidades
+test_sf$distancia_universidades <- dist_min_universidades
 
 # Distancia a hospitales ----------------------------------------------------------
 hospitales <- opq(bbox = getbb("Bogota Colombia")) %>%
@@ -777,7 +778,7 @@ disttest_matrix_hospitales <- st_distance(x = test_sf, y = cent_hospitales_sf)
 # Encontramos la distancia mínima a un hospital
 dist_min_hospitales <- apply(disttest_matrix_hospitales, 1, min)
 test$distancia_hospitales <- dist_min_hospitales
-test_hospitales_sf$distancia_hospitales <- dist_min_universidades
+test_sf$distancia_hospitales <- dist_min_hospitales
 
 # 2.4 EXPORTAR LAS BASES DE DATOS FINALES -------------------------------------------- #t
 # Train
