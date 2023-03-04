@@ -251,6 +251,7 @@ parq102 <- as.numeric(str_extract(test$description, "(\\d)+(?=patios)"))
 parq103 <- as.numeric(str_extract(test$description, "(\\d)+(?=  patios)"))
 
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
+## Examinamos con qué datos contamos
 available_features() %>% head(20)
 available_tags() %>% head(20)
 
@@ -258,6 +259,7 @@ available_tags("amenity")
 available_tags("building")
 available_tags("leisure")
 
+# Creamos la unidad geográfica Chapinero
 chapinero <- getbb(place_name="UPZ Chapinero, Bogota",
                    featuretype="boundary:administrative",
                    format_out="sf_polygon") %>% .$multipolygon
