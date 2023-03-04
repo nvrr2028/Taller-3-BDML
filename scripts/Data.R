@@ -101,13 +101,13 @@ available_tags() %>% head(20)
 
 available_tags("amenity")
 available_tags("building")
+available_tags("leisure")
 
 chapinero <- getbb(place_name="UPZ Chapinero, Bogota",
                    featuretype="boundary:administrative",
                    format_out="sf_polygon") %>% .$multipolygon
 
-# PARA TRAIN
-available_tags("leisure")
+################################# PARA TRAIN ###########################################
 
 # Distancia a parques ----------------------------------------------------------
 Parques <- opq(bbox = getbb("UPZ Chapinero, Bogota")) %>%
@@ -120,16 +120,16 @@ Parques_geometria <- Parques_sf$osm_polygons %>%
 cent_parques <- gCentroid(as(Parques_geometria$geometry, "Spatial"), byid = T)
 
 # Ahora vamos a calcular la distancia de cada apartamento al centroide de cada parque
-train_sf <- st_as_sf(train, coords = c("lon", "lat"))
-st_crs(train_sf) <- 4326
+train_parques_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_parques_sf) <- 4326
 cent_parques_sf <- st_as_sf(cent_parques, coords = c("x", "y"))
 # Esto va a ser demorado!
-dist_matrix <- st_distance(x = train_sf, y = cent_parques_sf)
+dist_matrix_parques <- st_distance(x = train_parques_sf, y = cent_parques_sf)
 
 # Encontramos la distancia mínima a un parque
-dist_min <- apply(dist_matrix, 1, min)
-train$distancia_parque <- dist_min
-train_sf$distancia_parque <- dist_min
+dist_min_parques <- apply(dist_matrix_parques, 1, min)
+train$distancia_parque <- dist_min_parques
+train_sf$distancia_parque <- dist_min_parques
 
 # Distancia a un gimnasio ----------------------------------------------------------
 Gym <- opq(bbox = getbb("UPZ Chapinero, Bogota")) %>%
@@ -144,14 +144,14 @@ cent_gym <- gCentroid(as(Parques_geometria$geometry, "Spatial"), byid = T)
 # Ahora vamos a calcular la distancia de cada apartamento al centroide de cada parque
 train_sf <- st_as_sf(train, coords = c("lon", "lat"))
 st_crs(train_sf) <- 4326
-centroides_sf <- st_as_sf(centroides, coords = c("x", "y"))
+cent_gym_sf <- st_as_sf(cent_gym, coords = c("x", "y"))
 # Esto va a ser demorado!
-dist_matrix <- st_distance(x = train_sf, y = centroides_sf)
+dist_matrix_gym <- st_distance(x = train_sf, y = cent_gym_sf)
 
 # Encontramos la distancia mínima a un parque
-dist_min <- apply(dist_matrix, 1, min)
-train$distancia_parque <- dist_min
-train_sf$distancia_parque <- dist_min
+dist_min_gym <- apply(dist_matrix_gym, 1, min)
+train$distancia_parque <- dist_min_gym
+train_sf$distancia_parque <- dist_min_gym
 
 
 #Obtenenemos las universidades
@@ -188,6 +188,8 @@ leaflet() %>%
   addCircles(data=puntos_transporte, popup = ~name)
 #chapinero_bbox <- c(-74.066598, 4.631753, -74.061713, 4.658588)
 #chapinero_osm <- osmdata::osmdata_download(bbox = chapinero_bbox, timeout = 60)
+
+################################# PARA TEST ###########################################
 
 # ------------------------------------------------------------------------------------ #
 # 3. Estadísticas descriptivas
