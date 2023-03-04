@@ -166,16 +166,16 @@ parq_train <- as.data.frame(cbind(parq11, parq12, parq13, parq21, parq22, parq23
                                parq91, parq92, parq93, parq101, parq102, parq103))
 train$cat_parqueadero <- NA
 for (j in 1:nrow(train)) {
-  for(i in 1:ncol(mts_train)){
-    if (is.na(mts_train[j,i])) {
-      train$cat_parqueadero[j] <- NA
-    } else {
+  for(i in 1:ncol(parq_train)){
+    if (!is.na(parq_train[j,i])){
       train$cat_parqueadero[j] <- parq_train[j,i]
     }
   }
 }
 train$cat_parqueadero <- as.factor(train$cat_parqueadero)
-train %>% 
+train$cat_parqueadero[train$cat_parqueadero>10] <- NA
+sum(is.na(train$cat_parqueadero))
+n <- train %>% 
   group_by(cat_parqueadero) %>%
   dplyr::summarise(n=n())
 
@@ -282,10 +282,17 @@ parq_test <- as.data.frame(cbind(parq11, parq12, parq13, parq21, parq22, parq23,
 test$cat_parqueadero <- NA
 for (j in 1:nrow(test)) {
   for(i in 1:ncol(parq_test)){
-    test$cat_parqueadero[j] <- parq_test[j,i]
+    if (!is.na(parq_test[j,i])) {
+      test$cat_parqueadero[j] <- parq_test[j,i]
+    }
   }
 }
 test$cat_parqueadero <- as.factor(test$cat_parqueadero)
+test$cat_parqueadero[test$cat_parqueadero>10] <- NA
+sum(is.na(test$cat_parqueadero))
+nn <- test %>% 
+  group_by(cat_parqueadero) %>%
+  dplyr::summarise(n=n())
 
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
 ## Examinamos con qué datos contamos
