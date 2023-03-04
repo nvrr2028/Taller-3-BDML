@@ -102,6 +102,10 @@ available_tags() %>% head(20)
 available_tags("amenity")
 available_tags("building")
 
+chapinero <- getbb(place_name="UPZ Chapinero, Bogota",
+                   featuretype="boundary:administrative",
+                   format_out="sf_polygon") %>% .$multipolygon
+
 #Obtenenemos las universidades
 universidades <- chapinero %>% 
   add_osm_feature(key="amenity",value="university") %>% # de las amenities disponibles, seleccionamos las universidades
