@@ -632,8 +632,8 @@ disttest_matrix_SM <- st_distance(x = test_sf, y = cent_SM_sf)
 
 # Encontramos la distancia mínima a un supermercado
 disttest_min_SM <- apply(disttest_matrix_SM, 1, min)
-test$distancia_SM <- disttest_SM_bar
-test_sf$distancia_SM <- disttest_SM_bar
+test$distancia_SM <- disttest_min_SM
+test_sf$distancia_SM <- disttest_min_SM
 
 # Distancia a un gimnasio ----------------------------------------------------------
 
