@@ -4,7 +4,7 @@
 #                                  Laura Manuela Rodríguez Morales                     #
 #                                  Nicol Valeria Rodríguez Rodríguez                   #
 #                                  Brayan Alexander Vargas Rojas                       #
-#                          Fuente: Properati,                                            #
+#                          Fuente: Properati                                           #
 #**************************************************************************************#
 
 # Limpiar el espacio
@@ -14,8 +14,8 @@ rm(list = ls(all.names = TRUE))
 # Cargar librerias.
 # ------------------------------------------------------------------------------------ #
 
-#setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
-setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
+setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
+#setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
 #setwd("C:/Users/lmrod/OneDrive/Documentos/GitHub/Taller-3-BDML")
 
 
@@ -181,6 +181,12 @@ n <- train %>%
   group_by(cat_parqueadero) %>%
   dplyr::summarise(n=n())
 
+# Property type - variable dummy
+nnn <- train %>% 
+  group_by(property_type) %>%
+  dplyr::summarise(n=n())
+train$property_type <- ifelse(train$property_type=="Casa", 1, 0)
+
 ################################# PARA TEST ###########################################
 # Todo en minuscula
 test$description <- tolower(test$description)
@@ -236,7 +242,7 @@ sum(is.na(test$surface_covered))
 
 # Dummy: terraza o balcon ------------------------------------------------------------------
 dumm1_test <- grepl("balcon|balcn|terraza|mirador", test$description)
-train$terraza <- ifelse(dumm1_train==TRUE, 1, 0)
+test$terraza <- ifelse(dumm1_test==TRUE, 1, 0)
 
 # Dummy: espacios sociales ------------------------------------------------------------------
 dumm2_test <- grepl("salon comunal|saln comunal|bbq|piscina|piscinas|zona comun|zona comn|zona comn|pin pon|ascensor|ascensores", test$description)
@@ -297,6 +303,12 @@ nn <- test %>%
   group_by(cat_parqueadero) %>%
   dplyr::summarise(n=n())
 
+# Property type - variable dummy
+nnn <- test %>% 
+  group_by(property_type) %>%
+  dplyr::summarise(n=n())
+test$property_type <- ifelse(test$property_type=="Casa", 1, 0)
+  
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
 ## Examinamos con qué datos contamos
 available_features() %>% head(20)
@@ -781,10 +793,10 @@ test_sf$distancia_hospitales <- dist_min_hospitales
 # 2.4 EXPORTAR LAS BASES DE DATOS FINALES -------------------------------------------- #t
 # Train
 train_final <- as.data.frame(train)
-write.csv(train_final,"./data/train_final")
+write.csv(train_final,"./data/train_final.csv", row.names = FALSE)
 # Test
 test_final <- as.data.frame(test)
-write.csv(test_final,"./data/test_final")
+write.csv(test_final,"./data/test_final.csv", row.names = FALSE)
 
 # ------------------------------------------------------------------------------------ #
 # 3. Estadísticas descriptivas
