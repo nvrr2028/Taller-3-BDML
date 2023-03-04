@@ -181,6 +181,91 @@ chapinero <- getbb(place_name="UPZ Chapinero, Bogota",
                    featuretype="boundary:administrative",
                    format_out="sf_polygon") %>% .$multipolygon
 
+##### trasmi bgt
+trasmi <- bogota %>% 
+  add_osm_feature(key="amenity",value="bus_station") %>% # de las amenities disponibles, seleccionamos las universidades
+  osmdata_sf() #transformamos a un objeto sf
+
+puntos_trasmi<-trasmi$osm_point
+head(puntos_bus)
+## ver buses bgt
+alltrasmi<-bus$osm_polygons 
+ggplot()+
+  geom_sf(data=alltrasmi) +
+  theme_bw()
+
+##### cai bgt
+cai <- bogota %>% 
+  add_osm_feature(key="amenity",value="police") %>% # de las amenities disponibles, seleccionamos las universidades
+  osmdata_sf() #transformamos a un objeto sf
+
+puntos_cai<-cai$osm_point
+head(puntos_cai)
+## ver edificio uniandes 
+allcai<-cai$osm_polygons 
+ggplot()+
+  geom_sf(data=allcai) +
+  theme_bw()
+
+##### supermercados bgt
+super <- bogota %>% 
+  add_osm_feature(key="shop",value="supermarket") %>% # de las amenities disponibles, seleccionamos las universidades
+  osmdata_sf() #transformamos a un objeto sf
+
+puntos_super<-super$osm_point
+head(puntos_super)
+
+allsuper<-cai$osm_polygons 
+ggplot()+
+  geom_sf(data=allsuper) +
+  theme_bw()
+
+##### supermercados bgt
+super <- bogota %>% 
+  add_osm_feature(key="shop",value="supermarket") %>% # de las amenities disponibles, seleccionamos las universidades
+  osmdata_sf() #transformamos a un objeto sf
+
+puntos_super<-super$osm_point
+head(puntos_super)
+
+allsuper<-cai$osm_polygons 
+ggplot()+
+  geom_sf(data=allsuper) +
+  theme_bw()
+
+##### bar bgt
+bar <- bogota %>% 
+  add_osm_feature(key="amenity",value="bar") %>% # de las amenities disponibles, seleccionamos las universidades
+  osmdata_sf() #transformamos a un objeto sf
+
+puntos_bar<-bar$osm_point
+head(puntos_bar)
+
+allbar<-bar$osm_polygons 
+ggplot()+
+  geom_sf(data=allbar) +
+  theme_bw()
+
+##### cc bgt
+cc <- bogota %>% 
+  add_osm_feature(key="shop",value="Mall") %>% # de las amenities disponibles, seleccionamos las universidades
+  osmdata_sf() #transformamos a un objeto sf
+
+puntos_cc<-cc$osm_point
+head(puntos_cc)
+
+allcc<-cc$osm_polygons 
+ggplot()+
+  geom_sf(data=allcc) +
+  theme_bw()
+
+#importamos la librería
+p_load("leaflet")
+
+leaflet() %>% 
+  addTiles() %>%  #capa base
+  addPolygons(data=ML) #capa edificio ML
+
 ################################# PARA TRAIN ###########################################
 
 # Distancia a parques ----------------------------------------------------------
