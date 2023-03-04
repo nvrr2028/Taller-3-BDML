@@ -14,8 +14,8 @@ rm(list = ls(all.names = TRUE))
 # Cargar librerias.
 # ------------------------------------------------------------------------------------ #
 
-setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
-#setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
+#setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
+setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
 #setwd("C:/Users/lmrod/OneDrive/Documentos/GitHub/Taller-3-BDML")
 
 
@@ -164,7 +164,7 @@ available_tags("leisure")
 chapinero <- getbb(place_name="UPZ Chapinero, Bogota",
                    featuretype="boundary:administrative",
                    format_out="sf_polygon") %>% .$multipolygon
-
+p_load("leaflet")
 ##### trasmi bgt
 trasmi <- bogota %>% 
   add_osm_feature(key="amenity",value="bus_station") %>% # de las amenities disponibles, seleccionamos las universidades
