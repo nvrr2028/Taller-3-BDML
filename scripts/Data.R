@@ -77,7 +77,7 @@ train$description <- gsub("\\s+", " ", str_trim(train$description))
 # Dummy: chapinero ------------------------------------------------------------------
 cond1_train <- grepl(" chapinero |chapinero|el verjn bajo|el refugio|chic reservado|bellavista|chic alto|el nogal|el refugio|la cabrera|los rosales|seminario|toscana|san isidro patios|la esperanza nororiental|la surea|san isidro|san luis altos del cabo|pardo rubio|bosque caldern|bosque caldern tejada|chapinero alto|el castillo|el paraso|emaus| granada|ingemar|juan xxiii|la salle|las acacias|los olivos|mara cristina|mariscal sucre|nueva granada| palomar|pardo rubio|san martn de porres|villa anita|villa del cerro|chic lago|antiguo country|chic norte|chic norte ii|chic norte iii|chic occidental|el chic|el retiro|espartillal|la cabrera|lago gaitn|porcincula|quinta camacho|chapinero centro|catalua|chapinero central|chapinero norte|marly|sucre", train$description)
 cond2_train <- grepl(" chapinero |chapinero|el verjn bajo|el refugio|chic reservado|bellavista|chic alto|el nogal|el refugio|la cabrera|los rosales|seminario|toscana|san isidro patios|la esperanza nororiental|la surea|san isidro|san luis altos del cabo|pardo rubio|bosque caldern|bosque caldern tejada|chapinero alto|el castillo|el paraso|emaus| granada|ingemar|juan xxiii|la salle|las acacias|los olivos|mara cristina|mariscal sucre|nueva granada| palomar|pardo rubio|san martn de porres|villa anita|villa del cerro|chic lago|antiguo country|chic norte|chic norte ii|chic norte iii|chic occidental|el chic|el retiro|espartillal|la cabrera|lago gaitn|porcincula|quinta camacho|chapinero centro|catalua|chapinero central|chapinero norte|marly|sucre", train$title)
-filtro_train <- cond1 | cond2 
+filtro_train <- cond1_train | cond2_train 
 train$Chapinero <- ifelse(filtro_train==TRUE, 1, 0)
 
 # Metros cuadrados ------------------------------------------------------------------
@@ -180,6 +180,10 @@ available_tags("leisure")
 chapinero <- getbb(place_name="UPZ Chapinero, Bogota",
                    featuretype="boundary:administrative",
                    format_out="sf_polygon") %>% .$multipolygon
+p_load("omsdata")
+bogota<-opq(bbox = getbb("Bogotá Colombia"))
+bogota
+
 p_load("leaflet")
 ##### trasmi bgt
 trasmi <- bogota %>% 
@@ -187,12 +191,18 @@ trasmi <- bogota %>%
   osmdata_sf() #transformamos a un objeto sf
 
 puntos_trasmi<-trasmi$osm_point
-head(puntos_bus)
-## ver buses bgt
-alltrasmi<-bus$osm_polygons 
+head(puntos_trasmi)
+
+TR<-trasmi$osm_polygons 
 ggplot()+
-  geom_sf(data=alltrasmi) +
+  geom_sf(data=TR) +
   theme_bw()
+## ver buses bgt
+
+leaflet() %>% 
+  addTiles() %>%  #capa base
+  addPolygons(data=TR) #capa TR
+
 
 ##### cai bgt
 cai <- bogota %>% 
@@ -201,11 +211,18 @@ cai <- bogota %>%
 
 puntos_cai<-cai$osm_point
 head(puntos_cai)
-## ver edificio uniandes 
-allcai<-cai$osm_polygons 
+
+CAI<-cai$osm_polygons 
 ggplot()+
-  geom_sf(data=allcai) +
-  theme_bw()
+  geom_sf(data=CAI) +
+  theme_bw
+
+## ver cais bgt
+
+leaflet() %>% 
+  addTiles() %>%  #capa base
+  addPolygons(data=CAI) #capa CAI
+
 
 ##### supermercados bgt
 super <- bogota %>% 
@@ -215,36 +232,15 @@ super <- bogota %>%
 puntos_super<-super$osm_point
 head(puntos_super)
 
-allsuper<-cai$osm_polygons 
+SM<-super$osm_polygons 
 ggplot()+
-  geom_sf(data=allsuper) +
-  theme_bw()
+  geom_sf(data=SM) +
+  theme_bw
 
-##### supermercados bgt
-super <- bogota %>% 
-  add_osm_feature(key="shop",value="supermarket") %>% # de las amenities disponibles, seleccionamos las universidades
-  osmdata_sf() #transformamos a un objeto sf
-
-puntos_super<-super$osm_point
-head(puntos_super)
-
-allsuper<-cai$osm_polygons 
-ggplot()+
-  geom_sf(data=allsuper) +
-  theme_bw()
-
-##### bar bgt
-bar <- bogota %>% 
-  add_osm_feature(key="amenity",value="bar") %>% # de las amenities disponibles, seleccionamos las universidades
-  osmdata_sf() #transformamos a un objeto sf
-
-puntos_bar<-bar$osm_point
-head(puntos_bar)
-
-allbar<-bar$osm_polygons 
-ggplot()+
-  geom_sf(data=allbar) +
-  theme_bw()
+## ver supermercados en bgt
+leaflet() %>% 
+  addTiles() %>%  #capa base
+  addPolygons(data=SM) #capa SM
 
 ##### cc bgt
 cc <- bogota %>% 
@@ -254,10 +250,16 @@ cc <- bogota %>%
 puntos_cc<-cc$osm_point
 head(puntos_cc)
 
-allcc<-cc$osm_polygons 
+CC<-cc$osm_polygons 
 ggplot()+
-  geom_sf(data=allcc) +
-  theme_bw()
+  geom_sf(data=CC) +
+  theme_bw
+
+## ver Centroscomerciales en bgt
+leaflet() %>% 
+  addTiles() %>%  #capa base
+  addPolygons(data=CC) #capa SM
+
 
 #importamos la librería
 p_load("leaflet")
