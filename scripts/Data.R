@@ -21,7 +21,9 @@ setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
 
 list.of.packages = c("pacman", "readr","tidyverse", "dplyr", "arsenal", "fastDummies", 
                      "caret", "glmnet", "MLmetrics", "skimr", "plyr", "stargazer", 
-                     "ggplot2", "corrplot", "Hmisc", "sf", "tmaptools", "osmdata", "leaflet")
+                     "ggplot2", "plotly", "corrplot", "Hmisc", "sf", "tmaptools", 
+                     "osmdata", "leaflet", "rgeos")
+
 
 new.packages = list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
@@ -298,11 +300,6 @@ nn <- test %>%
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
 ## Examinamos con qué datos contamos
 available_features() %>% head(20)
-available_tags() %>% head(20)
-
-available_tags("amenity")
-available_tags("building")
-available_tags("leisure")
 
 # Creamos la unidad geográfica Chapinero
 chapinero <- getbb(place_name="UPZ Chapinero, Bogota",
@@ -588,7 +585,7 @@ train_sf$distancia_colegios <- dist_min_colegios
 
 # Distancia a universidades ----------------------------------------------------------
 universidades <- opq(bbox = getbb("Bogota Colombia")) %>%
-  add_osm_feature(key = "amenity" , value = "universities") 
+  add_osm_feature(key = "amenity" , value = "university") 
 universidades_sf <- osmdata_sf(universidades)
 universidades_geometria <- universidades_sf$osm_polygons %>% 
   select(osm_id, name)
@@ -606,7 +603,7 @@ disttrain_matrix_universidades <- st_distance(x = train_sf, y = cent_universidad
 # Encontramos la distancia mínima a un universidad
 dist_min_universidades <- apply(disttrain_matrix_universidades, 1, min)
 train$distancia_universidades <- dist_min_universidades
-train_universidades_sf$distancia_universidades <- dist_min_universidades
+train_sf$distancia_universidades <- dist_min_universidades
 
 # Distancia a hospitales ----------------------------------------------------------
 hospitales <- opq(bbox = getbb("Bogota Colombia")) %>%
@@ -660,6 +657,7 @@ disttest_matrix_transmi <- st_distance(x = test_sf, y = cent_transmi_sf)
 disttest_min_transmi <- apply(disttest_matrix_transmi, 1, min)
 test$distancia_transmi <- disttest_min_transmi
 test_sf$distancia_transmi <- disttest_min_transmi
+
 # Distancia a cai --------------------------------------------------------------
 
 # Ahora vamos a calcular la distancia de cada apartamento al centroide de estacion de policia 
@@ -791,6 +789,7 @@ write.csv(test_final,"./data/test_final")
 # ------------------------------------------------------------------------------------ #
 # 3. Estadísticas descriptivas
 # ------------------------------------------------------------------------------------ #
+
 
 
 
