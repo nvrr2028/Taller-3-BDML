@@ -14,7 +14,7 @@ rm(list = ls(all.names = TRUE))
 # Cargar librerias.
 # ------------------------------------------------------------------------------------ #
 
-#setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
+setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
 #setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
 #setwd("C:/Users/lmrod/OneDrive/Documentos/GitHub/Taller-3-BDML")
 
@@ -27,14 +27,20 @@ new.packages = list.of.packages[!(list.of.packages %in% installed.packages()[,"P
 if(length(new.packages)) install.packages(new.packages)
 sapply(list.of.packages, require, character.only = TRUE)
 
-# Precio 
+# ------------------------------------------------------------------------------------ #
+# 1. Descripción del problema
+# ------------------------------------------------------------------------------------ #
 
+# ------------------------------------------------------------------------------------ #
+# 2. Data
+# ------------------------------------------------------------------------------------ #
+
+# Template submission: precio 
 precio_bog <- read.csv("./data/submission_template.csv")
 # Train
 train_bog <- read_csv("./data/train.csv")
 # Test 
 test_bog <- read_csv("./data/test.csv")
-
 
 # ------------------------------------------------------------------------------------ #
 # Compilar la base de datos
@@ -81,5 +87,9 @@ leaflet() %>%
   addCircles(data=puntos_transporte, popup = ~name)
 #chapinero_bbox <- c(-74.066598, 4.631753, -74.061713, 4.658588)
 #chapinero_osm <- osmdata::osmdata_download(bbox = chapinero_bbox, timeout = 60)
+
+# ------------------------------------------------------------------------------------ #
+# 3. Estadísticas descriptivas
+# ------------------------------------------------------------------------------------ #
 
 
