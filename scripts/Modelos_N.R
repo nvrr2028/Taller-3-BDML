@@ -68,8 +68,6 @@ ctrl <- trainControl(
 fmla <- formula(price~Chapinero+property_type+terraza+social+parqueadero+
                   distancia_parque+distancia_gym+distancia_transmi+distancia_cai+distancia_cc+distancia_bar+distancia_SM+
                   distancia_colegios+distancia_universidades+distancia_hospitales)
-# Fórmula de los modelos regularizada, resultado de la selección de Lasso y Elastic Net
-#fmla_reg <- formula(Price~)
 
 ### 3.1 Modelo benchmark: regresión lineal ------------------------------------------------------------
 ModeloRL <- train(fmla, 
@@ -86,13 +84,10 @@ metrics_ModeloRL <- metrics(eva_ModeloRL, obs, pred); metrics_ModeloRL # Cálcul
 ## Predicción 2: Predicciones con test_hogares
 pred_test2_ModeloRL <- predict(ModeloRL, newdata = test_bog)
 
-# Identificación de pobres y no pobres en test_hogares
-pob2_ModeloRL <- ifelse(pred_test2_ModeloRL<test_hogares$Lp, 1, 0)
-
 # Exportar para prueba en Kaggle
-Kaggle_ModeloRL <- data.frame(id=test_hogares$id, pobre=pob2_ModeloRL)
+Kaggle_ModeloRL <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloRL)
 write.csv(Kaggle_ModeloRL,"./stores/Kaggle_ModeloRL_N.csv", row.names = FALSE)
-# Accuracy: 0.75349
+# RMSE = 327172092.77510
 
 ### 3.2 Lasso -----------------------------------------------------------------------------------------
 
@@ -110,28 +105,18 @@ coef_lasso<-coef(Modelolasso$finalModel, Modelolasso$bestTune$lambda)
 coef_lasso
 
 ## Predicción 1: Predicciones con hog_testing
-pred_test1_Modelolasso <- predict(Modelolasso, newdata = hog_testing) # Predicción
-eva_Modelolasso <- data.frame(obs=hog_testing$Ingtotug, pred=pred_test1_Modelolasso) # Data frame con observados y predicciones
+pred_test1_Modelolasso <- predict(Modelolasso, newdata = testing) # Predicción
+eva_Modelolasso <- data.frame(obs=testing$price, pred=pred_test1_Modelolasso) # Data frame con observados y predicciones
 metrics_Modelolasso <- metrics(eva_Modelolasso, obs, pred); metrics_Modelolasso # Cálculo del medidas de precisión
 
-# Identificación de pobres y no pobres en hog_testing
-pob1_Modelolasso <- ifelse(pred_test1_Modelolasso<hog_testing$Lp, 1, 0)
-
-# Evaluación de clasificación
-eva_Modelolasso <- data.frame(obs=as.factor(hog_testing$Pobre), pred=as.factor(pob1_Modelolasso)) # Data frame con observados y predicciones
-confmatrix_Modelolasso <- confusionMatrix(data = as.factor(pob1_Modelolasso), reference = as.factor(hog_testing$Pobre)) ; confmatrix_Modelolasso # Matriz de confusión
-
 ## Predicción 2: Predicciones con test_hogares
-pred_test2_Modelolasso <- predict(Modelolasso, newdata = test_hogares)
-
-# Identificación de pobres y no pobres en test_hogares
-pob2_Modelolasso <- ifelse(pred_test2_Modelolasso<test_hogares$Lp, 1, 0)
+pred_test2_Modelolasso <- predict(Modelolasso, newdata = test_bog)
 
 # Exportar para prueba en Kaggle
-Kaggle_Modelolasso <- data.frame(id=test_hogares$id, pobre=pob2_Modelolasso)
+Kaggle_Modelolasso <- data.frame(property_id=test_bog$property_id, price=pred_test2_Modelolasso)
 write.csv(Kaggle_Modelolasso,"./stores/Kaggle_ModeloLS_N.csv", row.names = FALSE)
 
-# Accuracy: 0.75349
+# RMSE: 327258864.85935
 
 ### 3.3 Elastic net -----------------------------------------------------------------------------------
 ModeloEN<-caret::train(fmla,
@@ -148,25 +133,15 @@ ggplot(varImp(ModeloEN)) # Gráfico de importancia de las variables
 ModeloEN$bestTune
 
 ## Predicción 1: Predicciones con hog_testing
-pred_test1_ModeloEN <- predict(ModeloEN, newdata = hog_testing) # Predicción
-eva_ModeloEN <- data.frame(obs=hog_testing$Ingtotug, pred=pred_test1_ModeloEN) # Data frame con observados y predicciones
+pred_test1_ModeloEN <- predict(ModeloEN, newdata = testing) # Predicción
+eva_ModeloEN <- data.frame(obs=testing$price, pred=pred_test1_ModeloEN) # Data frame con observados y predicciones
 metrics_ModeloEN <- metrics(eva_ModeloEN, obs, pred); metrics_ModeloEN # Cálculo del medidas de precisión
 
-# Identificación de pobres y no pobres en hog_testing
-pob1_ModeloEN <- ifelse(pred_test1_ModeloEN<hog_testing$Lp, 1, 0)
-
-# Evaluación de clasificación
-eva_ModeloEN <- data.frame(obs=as.factor(hog_testing$Pobre), pred=as.factor(pob1_ModeloEN)) # Data frame con observados y predicciones
-confmatrix_ModeloEN <- confusionMatrix(data = as.factor(pob1_ModeloEN), reference = as.factor(hog_testing$Pobre)) ; confmatrix_ModeloEN # Matriz de confusión
-
 ## Predicción 2: Predicciones con test_hogares
-pred_test2_ModeloEN <- predict(ModeloEN, newdata = test_hogares)
-
-# Identificación de pobres y no pobres en test_hogares
-pob2_ModeloEN <- ifelse(pred_test2_ModeloEN<test_hogares$Lp, 1, 0)
+pred_test2_ModeloEN <- predict(ModeloEN, newdata = test_bog)
 
 # Exportar para prueba en Kaggle
-Kaggle_ModeloEN <- data.frame(id=test_hogares$id, pobre=pob2_ModeloEN)
+Kaggle_ModeloEN <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloEN)
 write.csv(Kaggle_ModeloEN,"./stores/Kaggle_ModeloEN_N.csv", row.names = FALSE)
 # Accuracy: 0.75462
 
@@ -242,24 +217,14 @@ ModeloGBM$finalModel
 plot(varImp(ModeloGBM,scale=TRUE))
 
 ## Predicción 1: Predicciones con hog_testing
-pred_test1_ModeloGBM <- predict(ModeloGBM, newdata = hog_testing, type="raw")
-eva_ModeloGBM <- data.frame(obs=hog_testing$Ingtotug, pred=pred_test1_ModeloGBM) # Data frame con observados y predicciones
+pred_test1_ModeloGBM <- predict(ModeloGBM, newdata = testing, type="raw")
+eva_ModeloGBM <- data.frame(obs=testing$price, pred=pred_test1_ModeloGBM) # Data frame con observados y predicciones
 metrics_ModeloGBM <- metrics(eva_ModeloGBM, obs, pred); metrics_ModeloGBM # Cálculo del medidas de precisión
 
-# Identificación de pobres y no pobres en hog_testing
-pob1_ModeloGBM <- ifelse(pred_test1_ModeloGBM<hog_testing$Lp, 1, 0)
-
-# Evaluación de clasificación
-eva_ModeloGBM <- data.frame(obs=as.factor(hog_testing$Pobre), pred=as.factor(pob1_ModeloGBM)) # Data frame con observados y predicciones
-confmatrix_ModeloGBM <- confusionMatrix(data = as.factor(pob1_ModeloGBM), reference = as.factor(hog_testing$Pobre)) ; confmatrix_ModeloGBM # Matriz de confusión
-
 ## Predicción 2: Predicciones con test_hogares
-pred_test2_ModeloGBM <- predict(ModeloGBM, newdata = test_hogares)
-
-# Identificación de pobres y no pobres en test_hogares
-pob2_ModeloGBM <- ifelse(pred_test2_ModeloGBM<test_hogares$Lp, 1, 0)
+pred_test2_ModeloGBM <- predict(ModeloGBM, newdata = test_bog)
 
 # Exportar para prueba en Kaggle
-Kaggle_ModeloGBM <- data.frame(id=test_hogares$id, pobre=pob2_ModeloGBM)
+Kaggle_ModeloGBM <- data.frame(property_id=test_bog$property_id, pobre=pred_test2_ModeloGBM)
 write.csv(Kaggle_ModeloGBM,"./stores/Kaggle_ModeloGBM_N.csv", row.names = FALSE)
 
