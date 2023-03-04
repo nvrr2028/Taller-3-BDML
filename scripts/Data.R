@@ -103,15 +103,19 @@ mts63 <- as.numeric(str_extract(train$description, "(\\d)+(?=  mtrs)"))
 mts71 <- as.numeric(str_extract(train$description, "(\\d)+(?= m )"))
 mts72 <- as.numeric(str_extract(train$description, "(\\d)+(?=m )"))
 mts73 <- as.numeric(str_extract(train$description, "(\\d)+(?=  m )"))
-library(kimisc)
-mts_train <- c(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32,
+mts_train <-  as.data.frame(cbind(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32,
                mts33, mts41, mts42, mts43, mts51, mts52, mts53, 
-               mts61, mts62, mts63, mts71, mts72, mts73)
-mts_train$factor <- append(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32,
-                                                   mts33, mts41, mts42, mts43, mts51, mts52, mts53, 
-                                                   mts61, mts62, mts63, mts71, mts72, mts73)
-
-train$surface_covered <- ifelse(is.na(train$surface_covered), mts_train, train$surface_covered)
+               mts61, mts62, mts63, mts71, mts72, mts73))
+for (j in 1:nrow(train)) {
+  for(i in 1:ncol(mts_train)){
+    if (is.na(mts_train[j,i])) {
+      train$surface_covered[j] <- train$surface_covered[j]
+    } else {
+      train$surface_covered[j] <- mts_train[j,i]
+    }
+  }
+}
+sum(is.na(train$surface_covered))
 
 # Dummy: terraza o balcon ------------------------------------------------------------------
 dumm1_train <- grepl("balcon|balcn|terraza|mirador", train$description)
@@ -156,11 +160,17 @@ parq93 <- as.numeric(str_extract(train$description, "(\\d)+(?=  patio)"))
 parq101 <- as.numeric(str_extract(train$description, "(\\d)+(?= patios)"))
 parq102 <- as.numeric(str_extract(train$description, "(\\d)+(?=patios)"))
 parq103 <- as.numeric(str_extract(train$description, "(\\d)+(?=  patios)"))
-parq_train <- cbind(parq11, parq12, parq13, parq21, parq22, parq23, parq31, parq32, 
+parq_train <- as.data.frame(cbind(parq11, parq12, parq13, parq21, parq22, parq23, parq31, parq32, 
                                parq33, parq41, parq42, parq43, parq51, parq52, parq53, 
                                parq61, parq62, parq63, parq71, parq72, parq73, parq81, parq82, parq83,
-                               parq91, parq92, parq93, parq101, parq102, parq103)
-train$cat_parqueadero <- as.factor(parq_train)
+                               parq91, parq92, parq93, parq101, parq102, parq103))
+train$cat_parqueadero <- NA
+for (j in 1:nrow(train)) {
+  for(i in 1:ncol(mts_train)){
+    train$cat_parqueadero[j] <- parq_train[j,i]
+  }
+}
+train$cat_parqueadero <- as.factor(train$cat_parqueadero)
 
 ################################# PARA TEST ###########################################
 # Todo en minuscula
@@ -201,10 +211,18 @@ mts63 <- as.numeric(str_extract(test$description, "(\\d)+(?=  mtrs)"))
 mts71 <- as.numeric(str_extract(test$description, "(\\d)+(?= m )"))
 mts72 <- as.numeric(str_extract(test$description, "(\\d)+(?=m )"))
 mts73 <- as.numeric(str_extract(test$description, "(\\d)+(?=  m )"))
-mts_test <- as.numeric(rbind(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32, 
-                             mts33, mts41, mts42, mts43, mts51, mts52, mts53, 
-                             mts61, mts62, mts63, mts71, mts72, mts73))
-test$surface_covered <- ifelse(is.na(test$surface_covered), mts_test, test$surface_covered)
+mts_test <- as.data.frame(cbind(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32,
+                  mts33, mts41, mts42, mts43, mts51, mts52, mts53, 
+                  mts61, mts62, mts63, mts71, mts72, mts73))
+for (j in 1:nrow(test)) {
+  for(i in 1:ncol(mts_test)){
+    if (is.na(mts_test[j,i])) {
+      test$surface_covered[j] <- test$surface_covered[j]
+    } else {
+      test$surface_covered[j] <- mts_test[j,i]
+    }
+  }
+}
 
 # Dummy: terraza o balcon ------------------------------------------------------------------
 dumm1_test <- grepl("balcon|balcn|terraza|mirador", test$description)
@@ -249,6 +267,18 @@ parq93 <- as.numeric(str_extract(test$description, "(\\d)+(?=  patio)"))
 parq101 <- as.numeric(str_extract(test$description, "(\\d)+(?= patios)"))
 parq102 <- as.numeric(str_extract(test$description, "(\\d)+(?=patios)"))
 parq103 <- as.numeric(str_extract(test$description, "(\\d)+(?=  patios)"))
+parq_test <- as.data.frame(cbind(parq11, parq12, parq13, parq21, parq22, parq23, parq31, parq32, 
+                                  parq33, parq41, parq42, parq43, parq51, parq52, parq53, 
+                                  parq61, parq62, parq63, parq71, parq72, parq73, parq81, parq82, parq83,
+                                  parq91, parq92, parq93, parq101, parq102, parq103))
+
+test$cat_parqueadero <- NA
+for (j in 1:nrow(test)) {
+  for(i in 1:ncol(parq_test)){
+    test$cat_parqueadero[j] <- parq_test[j,i]
+  }
+}
+test$cat_parqueadero <- as.factor(test$cat_parqueadero)
 
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
 ## Examinamos con qué datos contamos
@@ -685,6 +715,7 @@ disttest_min_gym <- apply(disttest_matrix_gym, 1, min)
 test$distancia_gym <- disttest_min_gym
 test_sf$distancia_gym <- disttest_min_gym
 
+<<<<<<< Updated upstream
 # Distancia a colegios ----------------------------------------------------------
 
 # Ahora vamos a calcular la distancia de cada apartamento al centroide de cada colegio
@@ -734,6 +765,15 @@ disttest_matrix_hospitales <- st_distance(x = test_sf, y = cent_hospitales_sf)
 dist_min_hospitales <- apply(disttest_matrix_hospitales, 1, min)
 test$distancia_hospitales <- dist_min_hospitales
 test_hospitales_sf$distancia_hospitales <- dist_min_universidades
+=======
+# 2.4 EXPORTAR LAS BASES DE DATOS FINALES -------------------------------------------- #t
+# Train
+train_final <- as.data.frame(train)
+write.csv(train_final,"./data/train_final")
+# Test
+test_final <- as.data.frame(test)
+write.csv(test_final,"./data/test_final")
+>>>>>>> Stashed changes
 
 # ------------------------------------------------------------------------------------ #
 # 3. Estadísticas descriptivas
