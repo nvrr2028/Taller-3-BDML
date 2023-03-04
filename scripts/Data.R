@@ -106,6 +106,54 @@ chapinero <- getbb(place_name="UPZ Chapinero, Bogota",
                    featuretype="boundary:administrative",
                    format_out="sf_polygon") %>% .$multipolygon
 
+# PARA TRAIN
+available_tags("leisure")
+
+# Distancia a parques ----------------------------------------------------------
+Parques <- opq(bbox = getbb("UPZ Chapinero, Bogota")) %>%
+  add_osm_feature(key = "leisure" , value = "park") 
+Parques_sf <- osmdata_sf(Parques)
+Parques_geometria <- Parques_sf$osm_polygons %>% 
+  select(osm_id, name)
+
+# Calculamos el centroide de cada parque
+cent_parques <- gCentroid(as(Parques_geometria$geometry, "Spatial"), byid = T)
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada parque
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+cent_parques_sf <- st_as_sf(cent_parques, coords = c("x", "y"))
+# Esto va a ser demorado!
+dist_matrix <- st_distance(x = train_sf, y = cent_parques_sf)
+
+# Encontramos la distancia mínima a un parque
+dist_min <- apply(dist_matrix, 1, min)
+train$distancia_parque <- dist_min
+train_sf$distancia_parque <- dist_min
+
+# Distancia a un gimnasio ----------------------------------------------------------
+Gym <- opq(bbox = getbb("UPZ Chapinero, Bogota")) %>%
+  add_osm_feature(key = "leisure" , value = "fitness_centre") 
+Gym_sf <- osmdata_sf(Gym)
+Gym_geometria <- Gym_sf$osm_polygons %>% 
+  select(osm_id, name)
+
+# Calculamos el centroide de cada parque
+cent_gym <- gCentroid(as(Parques_geometria$geometry, "Spatial"), byid = T)
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada parque
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+centroides_sf <- st_as_sf(centroides, coords = c("x", "y"))
+# Esto va a ser demorado!
+dist_matrix <- st_distance(x = train_sf, y = centroides_sf)
+
+# Encontramos la distancia mínima a un parque
+dist_min <- apply(dist_matrix, 1, min)
+train$distancia_parque <- dist_min
+train_sf$distancia_parque <- dist_min
+
+
 #Obtenenemos las universidades
 universidades <- chapinero %>% 
   add_osm_feature(key="amenity",value="university") %>% # de las amenities disponibles, seleccionamos las universidades
