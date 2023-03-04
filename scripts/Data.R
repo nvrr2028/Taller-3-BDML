@@ -167,10 +167,17 @@ parq_train <- as.data.frame(cbind(parq11, parq12, parq13, parq21, parq22, parq23
 train$cat_parqueadero <- NA
 for (j in 1:nrow(train)) {
   for(i in 1:ncol(mts_train)){
-    train$cat_parqueadero[j] <- parq_train[j,i]
+    if (is.na(mts_train[j,i])) {
+      train$cat_parqueadero[j] <- NA
+    } else {
+      train$cat_parqueadero[j] <- parq_train[j,i]
+    }
   }
 }
 train$cat_parqueadero <- as.factor(train$cat_parqueadero)
+train %>% 
+  group_by(cat_parqueadero) %>%
+  dplyr::summarise(n=n())
 
 ################################# PARA TEST ###########################################
 # Todo en minuscula
@@ -715,7 +722,6 @@ disttest_min_gym <- apply(disttest_matrix_gym, 1, min)
 test$distancia_gym <- disttest_min_gym
 test_sf$distancia_gym <- disttest_min_gym
 
-<<<<<<< Updated upstream
 # Distancia a colegios ----------------------------------------------------------
 
 # Ahora vamos a calcular la distancia de cada apartamento al centroide de cada colegio
@@ -765,7 +771,7 @@ disttest_matrix_hospitales <- st_distance(x = test_sf, y = cent_hospitales_sf)
 dist_min_hospitales <- apply(disttest_matrix_hospitales, 1, min)
 test$distancia_hospitales <- dist_min_hospitales
 test_hospitales_sf$distancia_hospitales <- dist_min_universidades
-=======
+
 # 2.4 EXPORTAR LAS BASES DE DATOS FINALES -------------------------------------------- #t
 # Train
 train_final <- as.data.frame(train)
@@ -773,7 +779,6 @@ write.csv(train_final,"./data/train_final")
 # Test
 test_final <- as.data.frame(test)
 write.csv(test_final,"./data/test_final")
->>>>>>> Stashed changes
 
 # ------------------------------------------------------------------------------------ #
 # 3. Estadísticas descriptivas
