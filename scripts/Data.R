@@ -14,8 +14,8 @@ rm(list = ls(all.names = TRUE))
 # Cargar librerias.
 # ------------------------------------------------------------------------------------ #
 
-#setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
-setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
+setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
+#setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
 #setwd("C:/Users/lmrod/OneDrive/Documentos/GitHub/Taller-3-BDML")
 
 
@@ -103,7 +103,7 @@ mts63 <- as.numeric(str_extract(train$description, "(\\d)+(?=  mtrs)"))
 mts71 <- as.numeric(str_extract(train$description, "(\\d)+(?= m )"))
 mts72 <- as.numeric(str_extract(train$description, "(\\d)+(?=m )"))
 mts73 <- as.numeric(str_extract(train$description, "(\\d)+(?=  m )"))
-mts_train <- as.numeric(rbind(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32, 
+mts_train <- as.numeric(cbind(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mts32, 
                               mts33, mts41, mts42, mts43, mts51, mts52, mts53, 
                               mts61, mts62, mts63, mts71, mts72, mts73))
 train$surface_covered <- ifelse(is.na(train$surface_covered), mts_train, train$surface_covered)
@@ -116,9 +116,46 @@ train$terraza <- ifelse(dumm1_train==TRUE, 1, 0)
 dumm2_train <- grepl("salon comunal|saln comunal|bbq|piscina|piscinas|zona comun|zona comn|zona comn|pin pon|ascensor|ascensores", train$description)
 train$social <- ifelse(dumm2_train==TRUE, 1, 0)
 
-# Dummy: parqueadero ------------------------------------------------------------------
-dumm3_train <- grepl("garaje|garajes|sotano|sotanos|parqueadero|parqueaderos|cochera|cocheras", train$description)
-train$terraza <- ifelse(dumm3_train==TRUE, 1, 0)
+# Dummy: parqueadero ------------------------------------------------------------------------
+dumm3_train <- grepl("garaje|garajes|sotano|sotanos|parqueadero|parqueaderos|cochera|cocheras|patio|patios", train$description)
+train$parqueadero <- ifelse(dumm3_train==TRUE, 1, 0)
+
+# Categórica: parqueadero ------------------------------------------------------------------------
+parq11 <- as.numeric(str_extract(train$description, "(\\d)+(?= garaje)"))
+parq12 <- as.numeric(str_extract(train$description, "(\\d)+(?=garaje)"))
+parq13 <- as.numeric(str_extract(train$description, "(\\d)+(?=  garaje)"))
+parq21 <- as.numeric(str_extract(train$description, "(\\d)+(?= garajes)"))
+parq22 <- as.numeric(str_extract(train$description, "(\\d)+(?=garajes)"))
+parq23 <- as.numeric(str_extract(train$description, "(\\d)+(?=  garajes)"))
+parq31 <- as.numeric(str_extract(train$description, "(\\d)+(?= sotano)"))
+parq32 <- as.numeric(str_extract(train$description, "(\\d)+(?=sotano)"))
+parq33 <- as.numeric(str_extract(train$description, "(\\d)+(?=  sotano)"))
+parq41 <- as.numeric(str_extract(train$description, "(\\d)+(?=sotanos)"))
+parq42 <- as.numeric(str_extract(train$description, "(\\d)+(?= sotanos)"))
+parq43 <- as.numeric(str_extract(train$description, "(\\d)+(?=  sotanos)"))
+parq51 <- as.numeric(str_extract(train$description, "(\\d)+(?= parqueadero)"))
+parq52 <- as.numeric(str_extract(train$description, "(\\d)+(?=parqueadero)"))
+parq53 <- as.numeric(str_extract(train$description, "(\\d)+(?=  parqueadero)"))
+parq61 <- as.numeric(str_extract(train$description, "(\\d)+(?= parqueaderos)"))
+parq62 <- as.numeric(str_extract(train$description, "(\\d)+(?=parqueaderos)"))
+parq63 <- as.numeric(str_extract(train$description, "(\\d)+(?=  parqueaderos)"))
+parq71 <- as.numeric(str_extract(train$description, "(\\d)+(?= cochera)"))
+parq72 <- as.numeric(str_extract(train$description, "(\\d)+(?=cochera)"))
+parq73 <- as.numeric(str_extract(train$description, "(\\d)+(?=  cochera)"))
+parq81 <- as.numeric(str_extract(train$description, "(\\d)+(?= cocheras)"))
+parq82 <- as.numeric(str_extract(train$description, "(\\d)+(?=cocheras)"))
+parq83 <- as.numeric(str_extract(train$description, "(\\d)+(?=  cocheras)"))
+parq91 <- as.numeric(str_extract(train$description, "(\\d)+(?= patio)"))
+parq92 <- as.numeric(str_extract(train$description, "(\\d)+(?=patio)"))
+parq93 <- as.numeric(str_extract(train$description, "(\\d)+(?=  patio)"))
+parq101 <- as.numeric(str_extract(train$description, "(\\d)+(?= patios)"))
+parq102 <- as.numeric(str_extract(train$description, "(\\d)+(?=patios)"))
+parq103 <- as.numeric(str_extract(train$description, "(\\d)+(?=  patios)"))
+parq_train <- cbind(parq11, parq12, parq13, parq21, parq22, parq23, parq31, parq32, 
+                               parq33, parq41, parq42, parq43, parq51, parq52, parq53, 
+                               parq61, parq62, parq63, parq71, parq72, parq73, parq81, parq82, parq83,
+                               parq91, parq92, parq93, parq101, parq102, parq103)
+train$cat_parqueadero <- as.factor(parq_train)
 
 ################################# PARA TEST ###########################################
 # Todo en minuscula
@@ -174,7 +211,39 @@ test$social <- ifelse(dumm2_test==TRUE, 1, 0)
 
 # Dummy: parqueadero ------------------------------------------------------------------
 dumm3_test <- grepl("garaje|garajes|sotano|sotanos|parqueadero|parqueaderos|cochera|cocheras", test$description)
-test$terraza <- ifelse(dumm3_test==TRUE, 1, 0)
+test$parqueadero <- ifelse(dumm3_test==TRUE, 1, 0)
+
+# Categórica: parqueadero ------------------------------------------------------------------------
+parq11 <- as.numeric(str_extract(test$description, "(\\d)+(?= garaje)"))
+parq12 <- as.numeric(str_extract(test$description, "(\\d)+(?=garaje)"))
+parq13 <- as.numeric(str_extract(test$description, "(\\d)+(?=  garaje)"))
+parq21 <- as.numeric(str_extract(test$description, "(\\d)+(?= garajes)"))
+parq22 <- as.numeric(str_extract(test$description, "(\\d)+(?=garajes)"))
+parq23 <- as.numeric(str_extract(test$description, "(\\d)+(?=  garajes)"))
+parq31 <- as.numeric(str_extract(test$description, "(\\d)+(?= sotano)"))
+parq32 <- as.numeric(str_extract(test$description, "(\\d)+(?=sotano)"))
+parq33 <- as.numeric(str_extract(test$description, "(\\d)+(?=  sotano)"))
+parq41 <- as.numeric(str_extract(test$description, "(\\d)+(?=sotanos)"))
+parq42 <- as.numeric(str_extract(test$description, "(\\d)+(?= sotanos)"))
+parq43 <- as.numeric(str_extract(test$description, "(\\d)+(?=  sotanos)"))
+parq51 <- as.numeric(str_extract(test$description, "(\\d)+(?= parqueadero)"))
+parq52 <- as.numeric(str_extract(test$description, "(\\d)+(?=parqueadero)"))
+parq53 <- as.numeric(str_extract(test$description, "(\\d)+(?=  parqueadero)"))
+parq61 <- as.numeric(str_extract(test$description, "(\\d)+(?= parqueaderos)"))
+parq62 <- as.numeric(str_extract(test$description, "(\\d)+(?=parqueaderos)"))
+parq63 <- as.numeric(str_extract(test$description, "(\\d)+(?=  parqueaderos)"))
+parq71 <- as.numeric(str_extract(test$description, "(\\d)+(?= cochera)"))
+parq72 <- as.numeric(str_extract(test$description, "(\\d)+(?=cochera)"))
+parq73 <- as.numeric(str_extract(test$description, "(\\d)+(?=  cochera)"))
+parq81 <- as.numeric(str_extract(test$description, "(\\d)+(?= cocheras)"))
+parq82 <- as.numeric(str_extract(test$description, "(\\d)+(?=cocheras)"))
+parq83 <- as.numeric(str_extract(test$description, "(\\d)+(?=  cocheras)"))
+parq91 <- as.numeric(str_extract(test$description, "(\\d)+(?= patio)"))
+parq92 <- as.numeric(str_extract(test$description, "(\\d)+(?=patio)"))
+parq93 <- as.numeric(str_extract(test$description, "(\\d)+(?=  patio)"))
+parq101 <- as.numeric(str_extract(test$description, "(\\d)+(?= patios)"))
+parq102 <- as.numeric(str_extract(test$description, "(\\d)+(?=patios)"))
+parq103 <- as.numeric(str_extract(test$description, "(\\d)+(?=  patios)"))
 
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
 
