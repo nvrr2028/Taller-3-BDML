@@ -14,8 +14,8 @@ rm(list = ls(all.names = TRUE))
 # Cargar librerias.
 # ------------------------------------------------------------------------------------ #
 
-setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
-#setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
+#setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
+setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
 #setwd("C:/Users/lmrod/OneDrive/Documentos/GitHub/Taller-3-BDML")
 
 
