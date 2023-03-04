@@ -75,16 +75,13 @@ train$description <- str_replace_all(train$description, "[^[:alnum:]]", " ")
 train$description <- gsub("\\s+", " ", str_trim(train$description))
 
 # Dummy: chapinero ------------------------------------------------------------------
+cond1_train <- grepl(" chapinero |chapinero|el verjn bajo|el refugio|chic reservado|bellavista|chic alto|el nogal|el refugio|la cabrera|los rosales|seminario|toscana|san isidro patios|la esperanza nororiental|la surea|san isidro|san luis altos del cabo|pardo rubio|bosque caldern|bosque caldern tejada|chapinero alto|el castillo|el paraso|emaus| granada|ingemar|juan xxiii|la salle|las acacias|los olivos|mara cristina|mariscal sucre|nueva granada| palomar|pardo rubio|san martn de porres|villa anita|villa del cerro|chic lago|antiguo country|chic norte|chic norte ii|chic norte iii|chic occidental|el chic|el retiro|espartillal|la cabrera|lago gaitn|porcincula|quinta camacho|chapinero centro|catalua|chapinero central|chapinero norte|marly|sucre", train$description)
+cond2_train <- grepl(" chapinero |chapinero|el verjn bajo|el refugio|chic reservado|bellavista|chic alto|el nogal|el refugio|la cabrera|los rosales|seminario|toscana|san isidro patios|la esperanza nororiental|la surea|san isidro|san luis altos del cabo|pardo rubio|bosque caldern|bosque caldern tejada|chapinero alto|el castillo|el paraso|emaus| granada|ingemar|juan xxiii|la salle|las acacias|los olivos|mara cristina|mariscal sucre|nueva granada| palomar|pardo rubio|san martn de porres|villa anita|villa del cerro|chic lago|antiguo country|chic norte|chic norte ii|chic norte iii|chic occidental|el chic|el retiro|espartillal|la cabrera|lago gaitn|porcincula|quinta camacho|chapinero centro|catalua|chapinero central|chapinero norte|marly|sucre", train$title)
+filtro_train <- cond1 | cond2 
+train$Chapinero <- ifelse(filtro_train==TRUE, 1, 0)
 
-cond1 <- grepl(" chapinero ", train$description)
-cond2 <- grepl("chapinero", train$description)
-cond3 <- grepl(" chapinero ", train$title)
-cond4 <- grepl("chapinero", train$title)
-
-filtro <- cond1 | cond2 | cond3 | cond4
-train$Chapinero <- ifelse()
-sum(filtro==TRUE)
 # Metros cuadrados ------------------------------------------------------------------
+# Se completa surface_covered, con el objetivo de no perder tantas observaciones
 mts11 <- as.numeric(str_extract(train$description, "(\\d)+(?= mts)"))
 mts12 <- as.numeric(str_extract(train$description, "(\\d)+(?=mts)"))
 mts13 <- as.numeric(str_extract(train$description, "(\\d)+(?=  mts)"))
@@ -111,8 +108,17 @@ mts_train <- as.numeric(rbind(mts11, mts12, mts13, mts21, mts22, mts23, mts31, m
                               mts61, mts62, mts63, mts71, mts72, mts73))
 train$surface_covered <- ifelse(is.na(train$surface_covered), mts_train, train$surface_covered)
 
+# Dummy: terraza o balcon ------------------------------------------------------------------
+dumm1_train <- grepl("balcon|balcn|terraza|mirador", train$description)
+train$terraza <- ifelse(dumm1_train==TRUE, 1, 0)
 
+# Dummy: espacios sociales ------------------------------------------------------------------
+dumm2_train <- grepl("salon comunal|saln comunal|bbq|piscina|piscinas|zona comun|zona comn|zona comn|pin pon|ascensor|ascensores", train$description)
+train$social <- ifelse(dumm2_train==TRUE, 1, 0)
 
+# Dummy: espacios sociales ------------------------------------------------------------------
+dumm3_train <- grepl("garaje|garajes|sotano|sotanos|zona comun|zona comn|zona comn|pin pon|ascensor|", train$description)
+train$terraza <- ifelse(dumm1_train==TRUE, 1, 0)
 
 ################################# PARA TEST ###########################################
 # Todo en minuscula
@@ -124,7 +130,14 @@ test$description <- str_replace_all(test$description, "[^[:alnum:]]", " ")
 # Eliminamos espacios extras
 test$description <- gsub("\\s+", " ", str_trim(test$description))
 
+# Dummy: chapinero ------------------------------------------------------------------
+cond1_test <- grepl(" chapinero |chapinero|el verjn bajo|el refugio|chic reservado|bellavista|chic alto|el nogal|el refugio|la cabrera|los rosales|seminario|toscana|san isidro patios|la esperanza nororiental|la surea|san isidro|san luis altos del cabo|pardo rubio|bosque caldern|bosque caldern tejada|chapinero alto|el castillo|el paraso|emaus| granada|ingemar|juan xxiii|la salle|las acacias|los olivos|mara cristina|mariscal sucre|nueva granada| palomar|pardo rubio|san martn de porres|villa anita|villa del cerro|chic lago|antiguo country|chic norte|chic norte ii|chic norte iii|chic occidental|el chic|el retiro|espartillal|la cabrera|lago gaitn|porcincula|quinta camacho|chapinero centro|catalua|chapinero central|chapinero norte|marly|sucre", test$description)
+cond2_test <- grepl(" chapinero |chapinero|el verjn bajo|el refugio|chic reservado|bellavista|chic alto|el nogal|el refugio|la cabrera|los rosales|seminario|toscana|san isidro patios|la esperanza nororiental|la surea|san isidro|san luis altos del cabo|pardo rubio|bosque caldern|bosque caldern tejada|chapinero alto|el castillo|el paraso|emaus| granada|ingemar|juan xxiii|la salle|las acacias|los olivos|mara cristina|mariscal sucre|nueva granada| palomar|pardo rubio|san martn de porres|villa anita|villa del cerro|chic lago|antiguo country|chic norte|chic norte ii|chic norte iii|chic occidental|el chic|el retiro|espartillal|la cabrera|lago gaitn|porcincula|quinta camacho|chapinero centro|catalua|chapinero central|chapinero norte|marly|sucre", test$title)
+filtro_test <- cond1_test | cond2_test 
+test$Chapinero <- ifelse(filtro_test==TRUE, 1, 0)
+
 # Metros cuadrados ------------------------------------------------------------------
+# Se completa surface_covered, con el objetivo de no perder tantas observaciones
 mts11 <- as.numeric(str_extract(test$description, "(\\d)+(?= mts)"))
 mts12 <- as.numeric(str_extract(test$description, "(\\d)+(?=mts)"))
 mts13 <- as.numeric(str_extract(test$description, "(\\d)+(?=  mts)"))
@@ -151,6 +164,9 @@ mts_test <- as.numeric(rbind(mts11, mts12, mts13, mts21, mts22, mts23, mts31, mt
                              mts61, mts62, mts63, mts71, mts72, mts73))
 test$surface_covered <- ifelse(is.na(test$surface_covered), mts_test, test$surface_covered)
 
+# Dummy: terraza o balcon ------------------------------------------------------------------
+dumm1_test <- grepl("balcon|balcn|terraza|mirador", test$description)
+test$terraza <- ifelse(dumm1_test==TRUE, 1, 0)
 
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
 
@@ -168,7 +184,7 @@ chapinero <- getbb(place_name="UPZ Chapinero, Bogota",
 ################################# PARA TRAIN ###########################################
 
 # Distancia a parques ----------------------------------------------------------
-Parques <- opq(bbox = getbb("UPZ Chapinero, Bogota")) %>%
+Parques <- opq(bbox = getbb("Bogota Colombia")) %>%
   add_osm_feature(key = "leisure" , value = "park") 
 Parques_sf <- osmdata_sf(Parques)
 Parques_geometria <- Parques_sf$osm_polygons %>% 
@@ -190,7 +206,7 @@ train$distancia_parque <- dist_min_parques
 train_parques_sf$distancia_parque <- dist_min_parques
 
 # Distancia a un gimnasio ----------------------------------------------------------
-Gym <- opq(bbox = getbb("UPZ Chapinero, Bogota")) %>%
+Gym <- opq(bbox = getbb("Bogota Colombia")) %>%
   add_osm_feature(key = "leisure" , value = "fitness_centre") 
 Gym_sf <- osmdata_sf(Gym)
 Gym_geometria <- Gym_sf$osm_polygons %>% 
