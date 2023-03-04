@@ -246,7 +246,7 @@ parq102 <- as.numeric(str_extract(test$description, "(\\d)+(?=patios)"))
 parq103 <- as.numeric(str_extract(test$description, "(\\d)+(?=  patios)"))
 
 # 2.3 Variables adicionales de fuentes externas -------------------------------------- #
-
+##Revisamos conqué datos contamos
 available_features() %>% head(20)
 available_tags() %>% head(20)
 
@@ -354,7 +354,7 @@ train_sf <- st_as_sf(train, coords = c("lon", "lat"))
 st_crs(train_sf) <- 4326
 cent_parques_sf <- st_as_sf(cent_parques, coords = c("x", "y"))
 # Esto va a ser demorado!
-disttrain_matrix_parques <- st_distance(x = train_parques_sf, y = cent_parques_sf)
+disttrain_matrix_parques <- st_distance(x = train_sf, y = cent_parques_sf)
 
 # Encontramos la distancia mínima a un parque
 dist_min_parques <- apply(disttrain_matrix_parques, 1, min)
@@ -383,40 +383,96 @@ dist_min_gym <- apply(disttrain_matrix_gym, 1, min)
 train$distancia_gym <- dist_min_gym
 train_sf$distancia_gym <- dist_min_gym
 
-#Obtenenemos las universidades
-universidades <- chapinero %>% 
-  add_osm_feature(key="amenity",value="university") %>% # de las amenities disponibles, seleccionamos las universidades
-  osmdata_sf() #transformamos a un objeto sf
+# Distancia a colegios ----------------------------------------------------------
+colegios <- opq(bbox = getbb("Bogota Colombia")) %>%
+  add_osm_feature(key = "leisure" , value = "park") 
+colegios_sf <- osmdata_sf(colegios)
+colegios_geometria <- colegios_sf$osm_polygons %>% 
+  select(osm_id, name)
 
-puntos_universidades<-universidades$osm_point
-head(puntos_universidades)
+# Calculamos el centroide de cada colegio
+cent_colegios <- gCentroid(as(colegios_geometria$geometry, "Spatial"), byid = T)
 
-ggplot()+
-  geom_sf(data=puntos_universidades) +
-  theme_bw()
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada colegio
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+cent_colegios_sf <- st_as_sf(cent_colegios, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttrain_matrix_colegios <- st_distance(x = train_sf, y = cent_colegios_sf)
 
-leaflet() %>% 
-  addTiles() %>%  #capa base
-  addCircles(data=puntos_universidades, popup = ~name)
+# Encontramos la distancia mínima a un colegio
+dist_min_colegios <- apply(disttrain_matrix_colegios, 1, min)
+train$distancia_colegios <- dist_min_colegios
+train_colegios_sf$distancia_colegios <- dist_min_colegios
+
+# Distancia a universidades ----------------------------------------------------------
+universidades <- opq(bbox = getbb("Bogota Colombia")) %>%
+  add_osm_feature(key = "leisure" , value = "park") 
+universidades_sf <- osmdata_sf(universidades)
+universidades_geometria <- universidades_sf$osm_polygons %>% 
+  select(osm_id, name)
+
+# Calculamos el centroide de cada universidad
+cent_universidades <- gCentroid(as(universidades_geometria$geometry, "Spatial"), byid = T)
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada universidad
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+cent_universidades_sf <- st_as_sf(cent_universidades, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttrain_matrix_universidades <- st_distance(x = train_sf, y = cent_universidades_sf)
+
+# Encontramos la distancia mínima a un universidad
+dist_min_universidades <- apply(disttrain_matrix_universidades, 1, min)
+train$distancia_universidades <- dist_min_universidades
+train_universidades_sf$distancia_universidades <- dist_min_universidades
+
+# Distancia a hospitales ----------------------------------------------------------
+universidades <- opq(bbox = getbb("Bogota Colombia")) %>%
+  add_osm_feature(key = "leisure" , value = "park") 
+universidades_sf <- osmdata_sf(universidades)
+universidades_geometria <- universidades_sf$osm_polygons %>% 
+  select(osm_id, name)
+
+# Calculamos el centroide de cada universidad
+cent_universidades <- gCentroid(as(universidades_geometria$geometry, "Spatial"), byid = T)
+
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada universidad
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+cent_universidades_sf <- st_as_sf(cent_universidades, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttrain_matrix_universidades <- st_distance(x = train_sf, y = cent_universidades_sf)
+
+# Encontramos la distancia mínima a un universidad
+dist_min_universidades <- apply(disttrain_matrix_universidades, 1, min)
+train$distancia_universidades <- dist_min_universidades
+train_universidades_sf$distancia_universidades <- dist_min_universidades
 
 
-#Obtenenemos transporte
-transporte <- chapinero %>% 
-  add_osm_feature(key="building",value="transportation") %>% # de las amenities disponibles, seleccionamos las universidades
-  osmdata_sf() #transformamos a un objeto sf
+# Distancia a hospitales ----------------------------------------------------------
+hospitales <- opq(bbox = getbb("Bogota Colombia")) %>%
+  add_osm_feature(key = "leisure" , value = "park") 
+hospitales_sf <- osmdata_sf(hospitales)
+hospitales_geometria <- hospitales_sf$osm_polygons %>% 
+  select(osm_id, name)
 
-puntos_transporte<-transporte$osm_point
-head(puntos_transporte)
+# Calculamos el centroide de cada hospital
+cent_hospitales <- gCentroid(as(hospitales_geometria$geometry, "Spatial"), byid = T)
 
-ggplot()+
-  geom_sf(data=puntos_transporte) +
-  theme_bw()
+# Ahora vamos a calcular la distancia de cada apartamento al centroide de cada hospital
+train_sf <- st_as_sf(train, coords = c("lon", "lat"))
+st_crs(train_sf) <- 4326
+cent_hospitales_sf <- st_as_sf(cent_hospitales, coords = c("x", "y"))
+# Esto va a ser demorado!
+disttrain_matrix_hospitales <- st_distance(x = train_sf, y = cent_hospitales_sf)
 
-leaflet() %>% 
-  addTiles() %>%  #capa base
-  addCircles(data=puntos_transporte, popup = ~name)
-#chapinero_bbox <- c(-74.066598, 4.631753, -74.061713, 4.658588)
-#chapinero_osm <- osmdata::osmdata_download(bbox = chapinero_bbox, timeout = 60)
+# Encontramos la distancia mínima a un hospital
+dist_min_hospitales <- apply(disttrain_matrix_hospitales, 1, min)
+train$distancia_hospitales <- dist_min_hospitales
+train_hospitales_sf$distancia_hospitales <- dist_min_universidades
+
+
 
 ################################# PARA TEST ###########################################
 
