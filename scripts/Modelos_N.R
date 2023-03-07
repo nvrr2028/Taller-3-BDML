@@ -15,11 +15,12 @@ rm(list = ls(all.names = TRUE))
 # ------------------------------------------------------------------------------------ #
 
 setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
+setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
 
 list.of.packages = c("pacman", "readr","tidyverse", "dplyr", "arsenal", "fastDummies", 
                      "caret", "glmnet", "MLmetrics", "skimr", "plyr", "stargazer", 
                      "ggplot2", "plotly", "corrplot", "Hmisc", "sf", "tmaptools", 
-                     "osmdata", "leaflet", "rgeos", "yardstick")
+                     "osmdata", "leaflet", "rgeos", "yardstick", "SuperLearner")
 
 
 new.packages = list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
@@ -211,3 +212,53 @@ pred_test2_ModeloGBM <- predict(ModeloGBM, newdata = test_bog)
 Kaggle_ModeloGBM <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloGBM)
 write.csv(Kaggle_ModeloGBM,"./stores/Kaggle_ModeloGBM_N.csv", row.names = FALSE)
 # RMSE: 320191435.77919
+
+################################   BRAY       ####################################
+p_load("SuperLearner")
+train_bog<- train_bog  %>% mutate(logprice=log(price))
+ySL<-train_bog$logprice
+XSL<- train_bog  %>% select(Chapinero,property_type,terraza,social,parqueadero,
+                          distancia_parque,distancia_gym,distancia_transmi,distancia_cai,distancia_cc,distancia_bar,distancia_SM,
+                          distancia_colegios,distancia_universidades,distancia_hospitales)
+
+
+sl.lib <- c("SL.glmnet", "SL.lm", "Sl.ridge") #lista de los algoritmos a correr
+
+# Fit using the SuperLearner package,
+
+Super1 <- SuperLearner(Y = ySL,  X= data.frame(XSL),
+                     method = "method.NNLS", # combinación convexa
+                     SL.library = sl.lib)
+
+Super1
+
+## NET 
+# Customize the defaults for random forest.
+custon_glmnet = create.Learner("SL.glmnet", tune = list(alpha = seq(0, 1, length.out=5)))
+
+# Look at the object.
+custon_glmnet$names
+
+
+sl.net <- c("SL.glmnet_1", "SL.glmnet_2", "SL.glmnet_3", "SL.glmnet_4", "SL.glmnet_5") #lista de los algoritmos a correr
+
+# Fit using the SuperLearner package,
+
+Super2 <- SuperLearner(Y = ySL,  X= data.frame(XSL),
+                       method = "method.NNLS", # combinación convexa
+                       SL.library = sl.net)
+
+Super2
+
+test_bog <- test_bog  %>%  mutate(yhat_Sup=predict(Super2, newdata = data.frame(test_bog), onlySL = T)
+
+with(test,mean(abs(logprice-yhat_Sup)) #MAE
+
+
+
+
+
+
+
+
+
