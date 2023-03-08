@@ -91,7 +91,7 @@ ModeloRL <- train(fmla,
                   data = training, method = 'lm',
                   trControl= ctrl,
                   preProcess = c("center", "scale"),
-                  "MAE"
+                  metric= "MAE",
                   na.action = na.pass)
 
 ## Predicción 1: Predicciones con hog_testing
@@ -163,7 +163,7 @@ pred_test2_ModeloEN <- predict(ModeloEN, newdata = test_bog)
 # Exportar para prueba en Kaggle
 Kaggle_ModeloEN <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloEN)
 write.csv(Kaggle_ModeloEN,"./stores/Kaggle_ModeloEN_N.csv", row.names = FALSE)
-# RMSE: 327259725.00462
+# RMSE: 298404785.01076
 
 ### 3.4 GBM -------------------------------------------------------------------------------------------
 p_load(gbm)
@@ -196,7 +196,9 @@ pred_test2_ModeloGBM <- predict(ModeloGBM, newdata = test_bog)
 # Exportar para prueba en Kaggle
 Kaggle_ModeloGBM <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloGBM)
 write.csv(Kaggle_ModeloGBM,"./stores/Kaggle_ModeloGBM_N.csv", row.names = FALSE)
-# RMSE: 320191435.77919
+# RMSE: 263245024.82436
+
+### 3.5 PCA -------------------------------------------------------------------------------------------
 
 ################################   BRAY       ####################################
 p_load("SuperLearner")
