@@ -15,7 +15,7 @@ rm(list = ls(all.names = TRUE))
 # ------------------------------------------------------------------------------------ #
 
 setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
-setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
+#setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
 
 list.of.packages = c("pacman", "readr","tidyverse", "dplyr", "arsenal", "fastDummies", 
                      "caret", "glmnet", "MLmetrics", "skimr", "plyr", "stargazer", 
@@ -44,6 +44,22 @@ test_bog <- read_csv("./data/test_final.csv")
 test_bog$cat_parqueadero <- as.factor(test_bog$cat_parqueadero)
 attach(test_bog)
 
+# Ajustes adicionales de las bases de datos
+lm_surface <- lm(surface_covered ~ bedrooms + property_type, data = train_bog)
+train_bog$surface_covered2 <- ifelse(is.na(train_bog$surface_covered), 
+                                     coef(lm_surface)[2]*train_bog$bedrooms+coef(lm_surface)[3]*train_bog$property_type, 
+                                     train_bog$surface_covered)
+test_bog$surface_covered2 <- ifelse(is.na(test_bog$surface_covered), 
+                                    coef(lm_surface)[2]*test_bog$bedrooms+coef(lm_surface)[3]*test_bog$property_type, 
+                                    test_bog$surface_covered)
+lm_bathroom <- lm(bathrooms ~ bedrooms + property_type, data = train_bog)
+train_bog$bathrooms2 <- ifelse(is.na(train_bog$bathrooms), 
+                                     coef(lm_bathroom)[2]*train_bog$bedrooms+coef(lm_bathroom)[3]*train_bog$property_type, 
+                                     train_bog$bathrooms)
+test_bog$bathrooms2 <- ifelse(is.na(test_bog$bathrooms), 
+                              coef(lm_bathroom)[2]*test_bog$bedrooms+coef(lm_bathroom)[3]*test_bog$property_type, 
+                              test_bog$bathrooms)
+
 # ------------------------------------------------------------------------------------ #
 # 3. Modelos
 # ------------------------------------------------------------------------------------ #
@@ -66,7 +82,7 @@ ctrl <- trainControl(
   number = 10) # número de folds
 
 # Fórmula de los modelos
-fmla <- formula(price~Chapinero+property_type+terraza+social+parqueadero+
+fmla <- formula(price~surface_covered2+bedrooms+bathrooms2+Chapinero+property_type+terraza+social+parqueadero+
                   distancia_parque+distancia_gym+distancia_transmi+distancia_cai+distancia_cc+distancia_bar+distancia_SM+
                   distancia_colegios+distancia_universidades+distancia_hospitales)
 
@@ -74,7 +90,8 @@ fmla <- formula(price~Chapinero+property_type+terraza+social+parqueadero+
 ModeloRL <- train(fmla, 
                   data = training, method = 'lm',
                   trControl= ctrl,
-                  preProcess = c("center", "scale"), 
+                  preProcess = c("center", "scale"),
+                  "MAE"
                   na.action = na.pass)
 
 ## Predicción 1: Predicciones con hog_testing
@@ -98,7 +115,8 @@ Modelolasso<-train(fmla,
                    trControl = ctrl,
                    tuneGrid = expand.grid(alpha = 1, #lasso
                                           lambda = seq(0.001,0.1,by = 0.001)),
-                   preProcess = c("center", "scale")
+                   preProcess = c("center", "scale"), 
+                   metric = "MAE"
 ) 
 
 summary(Modelolasso) # Resumen del modelo
@@ -126,7 +144,8 @@ ModeloEN<-caret::train(fmla,
                        trControl = ctrl,
                        tuneGrid = expand.grid(alpha = seq(0,1,by = 0.01), #Lasso
                                               lambda = seq(0.001,0.1,by = 0.001)),
-                       preProcess = c("center", "scale")
+                       preProcess = c("center", "scale"), 
+                       metric = "MAE"
 ) 
 
 summary(ModeloEN) # Resumen del modelo
@@ -156,7 +175,7 @@ ModeloGBM <- train(fmla,
                    method = "gbm", 
                    trControl = ctrl,
                    tuneGrid=grid_gbm,
-                   metric = "RMSE"
+                   metric = "MAE"
 )            
 
 ModeloGBM #mtry es el número de predictores.
