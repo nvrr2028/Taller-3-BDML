@@ -146,41 +146,7 @@ Kaggle_ModeloEN <- data.frame(property_id=test_bog$property_id, price=pred_test2
 write.csv(Kaggle_ModeloEN,"./stores/Kaggle_ModeloEN_N.csv", row.names = FALSE)
 # RMSE: 327259725.00462
 
-### 3.4 Random Forest ---------------------------------------------------------------------------------
-
-#### Hiperparámetros
-mtry_grid <- expand.grid(mtry = seq(1, 40, 2))
-mtry_grid
-
-ModeloRF <- caret::train(fmla,
-                data = training,
-                method = 'rf',
-                trControl = ctrl,
-                metric="RMSE",
-                tuneGrid = mtry_grid,
-                preProcess = c("center", "scale"),
-                ntree=1000)
-
-ModeloRF #mtry es el número de predictores.
-plot(ModeloRF)
-ModeloRF$finalModel
-
-### Variable Importance
-varImp(ModeloRF,scale=TRUE)
-
-## Predicción 1: Predicciones con hog_testing
-pred_test1_ModeloRF <- predict(ModeloRF, newdata = testing, type="raw")
-eva_ModeloRF <- data.frame(obs=testing$price, pred=pred_test1_ModeloRF) # Data frame con observados y predicciones
-metrics_ModeloRF <- metrics(eva_ModeloRF, obs, pred); metrics_ModeloRF # Cálculo del medidas de precisión
-
-## Predicción 2: Predicciones con test_hogares
-pred_test2_ModeloRF <- predict(ModeloRF, newdata = test_bog)
-
-# Exportar para prueba en Kaggle
-Kaggle_ModeloEN <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloRF)
-write.csv(Kaggle_ModeloRF,"./stores/Kaggle_ModeloRF.csv", row.names = FALSE)
-
-### 3.6 GBM -------------------------------------------------------------------------------------------
+### 3.4 GBM -------------------------------------------------------------------------------------------
 p_load(gbm)
 grid_gbm<-expand.grid(n.trees=c(300,700,1000),interaction.depth=c(1:4),shrinkage=c(0.01,0.001),n.minobsinnode
                       =c(10,30, 40))
