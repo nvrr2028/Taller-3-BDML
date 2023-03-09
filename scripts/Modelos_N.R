@@ -238,18 +238,19 @@ ModeloSL <- SuperLearner(Y = ySL,  X= data.frame(XSL),
 ModeloSL
 
 ## Predicción 1: Predicciones con testing
-pred_test1_ModeloSL <- test  %>%  mutate(yhat_Sup=predict(ModeloSL, newdata = data.frame(testing), onlySL = T)$pred)
+testing <- testing  %>%  mutate(yhat_Sup=predict(ModeloSL, newdata = data.frame(testing), onlySL = T)$pred)
+pred_test1_ModeloSL <- testing$yhat_Sup
 eva_ModeloSL <- data.frame(obs=testing$price, pred=pred_test1_ModeloSL) # Data frame con observados y predicciones
 metrics_ModeloSL <- metrics(eva_ModeloSL, obs, pred); metrics_ModeloSL # Cálculo del medidas de precisión
 
 ## Predicción 2: Predicciones con test_bog
-pred_test2_ModeloSL <- predict(ModeloSL, newdata = test_bog)
+test_bog <- test_bog  %>%  mutate(yhat_Sup=predict(ModeloSL, newdata = data.frame(test_bog), onlySL = T)$pred)
+pred_test2_ModeloSL <- test_bog$yhat_Sup
 
 # Exportar para prueba en Kaggle
 Kaggle_ModeloSL <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloSL)
 write.csv(Kaggle_ModeloSL,"./stores/Kaggle_ModeloSL_N.csv", row.names = FALSE)
-# RMSE: 299411431.75789
-
+# RMSE: 279848874.92923
 
 ################################   BRAY       ####################################
 p_load("SuperLearner")
