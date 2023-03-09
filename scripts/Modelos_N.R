@@ -14,8 +14,8 @@ rm(list = ls(all.names = TRUE))
 # Cargar librerias.
 # ------------------------------------------------------------------------------------ #
 
-setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
-#setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
+#setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
+setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
 
 list.of.packages = c("pacman", "readr","tidyverse", "dplyr", "arsenal", "fastDummies", 
                      "caret", "glmnet", "MLmetrics", "skimr", "plyr", "stargazer", 
@@ -254,13 +254,6 @@ write.csv(Kaggle_ModeloSL,"./stores/Kaggle_ModeloSL_N.csv", row.names = FALSE)
 
 ################################   BRAY       ####################################
 p_load("SuperLearner")
-train_bog<- train_bog  %>% mutate(logprice=log(price))
-ySL<-train_bog$logprice
-XSL<- train_bog  %>% select(Chapinero,property_type,terraza,social,parqueadero,
-                          distancia_parque,distancia_gym,distancia_transmi,distancia_cai,distancia_cc,distancia_bar,distancia_SM,
-                          distancia_colegios,distancia_universidades,distancia_hospitales)
-
-
 sl.lib <- c("SL.glmnet", "SL.lm", "Sl.ridge") #lista de los algoritmos a correr
 
 # Fit using the SuperLearner package,
@@ -289,10 +282,19 @@ Super2 <- SuperLearner(Y = ySL,  X= data.frame(XSL),
 
 Super2
 
-test_bog <- test_bog  %>%  mutate(yhat_Sup=predict(Super2, newdata = data.frame(test_bog), onlySL = T)
+## Predicción 1: Predicciones con testing
+testing <- testing  %>%  mutate(yhat_Sup=predict(Super2, newdata = data.frame(testing), onlySL = T)$pred)
+pred_test1_Super2 <- testing$yhat_Sup
+eva_ModeloSuper2 <- data.frame(obs=testing$price, pred=pred_test1_ModeloSuper2) # Data frame con observados y predicciones
+metrics_ModeloSuper2 <- metrics(eva_ModeloSuper2, obs, pred); metrics_ModeloSuper2 # Cálculo del medidas de precisión
 
-with(test,mean(abs(logprice-yhat_Sup)) #MAE
+## Predicción 2: Predicciones con test_bog
+test_bog <- test_bog  %>%  mutate(yhat_Sup=predict(ModeloSuper2, newdata = data.frame(test_bog), onlySL = T)$pred)
+pred_test2_ModeloSuper2 <- test_bog$yhat_Sup
 
+# Exportar para prueba en Kaggle
+Kaggle_ModeloSuper2 <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloSuper2)
+write.csv(Kaggle_ModeloSuper2,"./stores/Kaggle_ModeloSuper2_N.csv", row.names = FALSE)
 
 
 
