@@ -20,8 +20,8 @@ setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
 list.of.packages = c("pacman", "readr","tidyverse", "dplyr", "arsenal", "fastDummies", 
                      "caret", "glmnet", "MLmetrics", "skimr", "plyr", "stargazer", 
                      "ggplot2", "plotly", "corrplot", "Hmisc", "sf", "tmaptools", 
-                     "osmdata", "leaflet", "rgeos", "yardstick", "SuperLearner")
-
+                     "osmdata", "leaflet", "rgeos", "yardstick", "SuperLearner", 
+                     "adabag")
 
 new.packages = list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
@@ -198,7 +198,58 @@ Kaggle_ModeloGBM <- data.frame(property_id=test_bog$property_id, price=pred_test
 write.csv(Kaggle_ModeloGBM,"./stores/Kaggle_ModeloGBM_N.csv", row.names = FALSE)
 # RMSE: 263245024.82436
 
-### 3.5 PCA -------------------------------------------------------------------------------------------
+### 3.5 Ridge -------------------------------------------------------------------------------------------
+grid=10^seq(50,-50,length=1000)
+
+ModeloRidge<- train(fmla,
+                    data = training,
+                    method = 'glmnet', 
+                    tuneGrid = expand.grid(alpha = 0, lambda = grid), 
+                    preProcess = c("center", "scale")
+)
+
+## Predicción 1: Predicciones con testing
+pred_test1_ModeloRidge <- predict(ModeloRidge, newdata = testing, type="raw")
+eva_ModeloRidge <- data.frame(obs=testing$price, pred=pred_test1_ModeloRidge) # Data frame con observados y predicciones
+metrics_ModeloRidge <- metrics(eva_ModeloRidge, obs, pred); metrics_ModeloRidge # Cálculo del medidas de precisión
+
+## Predicción 2: Predicciones con test_bog
+pred_test2_ModeloRidge <- predict(ModeloRidge, newdata = test_bog)
+
+# Exportar para prueba en Kaggle
+Kaggle_ModeloRidge <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloRidge)
+write.csv(Kaggle_ModeloRidge,"./stores/Kaggle_ModeloRidge_N.csv", row.names = FALSE)
+# RMSE: 299411431.75789
+
+### 3.5 Superlearner -------------------------------------------------------------------------------------------
+p_load("SuperLearner")
+ySL<-training$price
+XSL<- training  %>% select(surface_covered2,bedrooms,bathrooms2,Chapinero,property_type,terraza,social,parqueadero,
+                        distancia_parque,distancia_gym,distancia_transmi,distancia_cai,distancia_cc,distancia_bar,distancia_SM,
+                        distancia_colegios,distancia_universidades,distancia_hospitales)
+
+sl.lib <- c("SL.glmnet", "SL.lm", "SL.ridge", "SL.gbm" ) #lista de los algoritmos a correr
+
+# Fit using the SuperLearner package,
+ModeloSL <- SuperLearner(Y = ySL,  X= data.frame(XSL),
+                     method = "method.NNLS", # combinación convexa
+                     SL.library = sl.lib)
+
+ModeloSL
+
+## Predicción 1: Predicciones con testing
+pred_test1_ModeloSL <- test  %>%  mutate(yhat_Sup=predict(ModeloSL, newdata = data.frame(testing), onlySL = T)$pred)
+eva_ModeloSL <- data.frame(obs=testing$price, pred=pred_test1_ModeloSL) # Data frame con observados y predicciones
+metrics_ModeloSL <- metrics(eva_ModeloSL, obs, pred); metrics_ModeloSL # Cálculo del medidas de precisión
+
+## Predicción 2: Predicciones con test_bog
+pred_test2_ModeloSL <- predict(ModeloSL, newdata = test_bog)
+
+# Exportar para prueba en Kaggle
+Kaggle_ModeloSL <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloSL)
+write.csv(Kaggle_ModeloSL,"./stores/Kaggle_ModeloSL_N.csv", row.names = FALSE)
+# RMSE: 299411431.75789
+
 
 ################################   BRAY       ####################################
 p_load("SuperLearner")
