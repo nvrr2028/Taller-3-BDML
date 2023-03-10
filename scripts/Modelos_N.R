@@ -59,9 +59,12 @@ train_bog$bathrooms2 <- ifelse(is.na(train_bog$bathrooms),
 test_bog$bathrooms2 <- ifelse(is.na(test_bog$bathrooms), 
                               coef(lm_bathroom)[2]*test_bog$bedrooms+coef(lm_bathroom)[3]*test_bog$property_type, 
                               test_bog$bathrooms)
+# ------------------------------------------------------------------------------------ #
+# 3. Estadísticas descriptivas
+# ------------------------------------------------------------------------------------ #
 
 # ------------------------------------------------------------------------------------ #
-# 3. Modelos
+# 4. Modelos
 # ------------------------------------------------------------------------------------ #
 
 set.seed(0000)
