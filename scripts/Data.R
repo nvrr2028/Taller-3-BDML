@@ -14,7 +14,7 @@ rm(list = ls(all.names = TRUE))
 # Cargar librerias.
 # ------------------------------------------------------------------------------------ #
 
-#setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
+setwd("C:/Users/nicol/Documents/GitHub/Repositorios/Taller-3-BDML")
 setwd("/Users/bray/Desktop/Big Data/Talleres/Taller-3-BDML")
 #setwd("C:/Users/lmrod/OneDrive/Documentos/GitHub/Taller-3-BDML")
 
@@ -798,59 +798,3 @@ write.csv(train_final,"./data/train_final.csv", row.names = FALSE)
 test_final <- as.data.frame(test)
 write.csv(test_final,"./data/test_final.csv", row.names = FALSE)
 
-# ------------------------------------------------------------------------------------ #
-# 3. Estadísticas descriptivas
-# ------------------------------------------------------------------------------------ #
-
-train_bog <- read_csv("./data/train_final.csv")
-train_bog$cat_parqueadero <- as.factor(train_bog$cat_parqueadero)
-attach(train_bog)
-# Test 
-test_bog <- read_csv("./data/test_final.csv")
-test_bog$cat_parqueadero <- as.factor(test_bog$cat_parqueadero)
-attach(test_bog)
-
-# Ajustes adicionales de las bases de datos
-lm_surface <- lm(surface_covered ~ bedrooms + property_type, data = train_bog)
-train_bog$surface_covered2 <- ifelse(is.na(train_bog$surface_covered), 
-                                     coef(lm_surface)[2]*train_bog$bedrooms+coef(lm_surface)[3]*train_bog$property_type, 
-                                     train_bog$surface_covered)
-test_bog$surface_covered2 <- ifelse(is.na(test_bog$surface_covered), 
-                                    coef(lm_surface)[2]*test_bog$bedrooms+coef(lm_surface)[3]*test_bog$property_type, 
-                                    test_bog$surface_covered)
-lm_bathroom <- lm(bathrooms ~ bedrooms + property_type, data = train_bog)
-train_bog$bathrooms2 <- ifelse(is.na(train_bog$bathrooms), 
-                               coef(lm_bathroom)[2]*train_bog$bedrooms+coef(lm_bathroom)[3]*train_bog$property_type, 
-                               train_bog$bathrooms)
-test_bog$bathrooms2 <- ifelse(is.na(test_bog$bathrooms), 
-                              coef(lm_bathroom)[2]*test_bog$bedrooms+coef(lm_bathroom)[3]*test_bog$property_type, 
-                              test_bog$bathrooms)
-
-### Estadística descriptiva: análisis preliminar 
-
-library(dplyr)
-
-# Calcular las estadísticas descriptivas de cada variable
-estadisticas_variables <- train_bog %>%
-  summarise(across(c(price,surface_covered2,bedrooms,bathrooms2,Chapinero,property_type,terraza,parqueadero,
-                     distancia_parque,distancia_gym,distancia_transmi,distancia_cai,distancia_cc,distancia_bar,distancia_SM,
-                     distancia_colegios,distancia_universidades,distancia_hospitales), 
-                   list(media = mean, desv_est = sd, minimo = min, maximo = max)))
-
-# Agregar las estadísticas descriptivas de cada variable a la tabla original
-tabla_completa <- rbind(estadisticas, estadisticas_variables)
-
-# Exportar la tabla completa a LaTeX utilizando stargazer
-library(stargazer)
-stargazer(tabla_completa, type = "latex", title = "Estadísticas descriptivas", align = TRUE)
-
-estadisticas <- train_bog %>%
-  summarise(across(c(price,surface_covered2,bedrooms,bathrooms2,Chapinero,property_type,terraza,parqueadero,
-                     distancia_parque,distancia_gym,distancia_transmi,distancia_cai,distancia_cc,distancia_bar,distancia_SM,
-                     distancia_colegios,distancia_universidades,distancia_hospitales), 
-                   list(media = mean, desv_est = sd, minimo = min, maximo = max)))
-summarise(distancia_cai)
-stargazer(estadisticas, type = "latex", title = "Estadísticas descriptivas", align = TRUE)
-datos <- tibble(estadisticas = c(price,bedrooms,Chapinero,property_type,terraza,parqueadero,
-                                 distancia_parque,distancia_gym,distancia_transmi,distancia_cai,distancia_cc,distancia_bar,distancia_SM,
-                                 distancia_colegios,distancia_universidades,distancia_hospitales)

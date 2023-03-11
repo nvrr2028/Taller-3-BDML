@@ -62,6 +62,9 @@ test_bog$bathrooms2 <- ifelse(is.na(test_bog$bathrooms),
 # ------------------------------------------------------------------------------------ #
 # 3. Estadísticas descriptivas
 # ------------------------------------------------------------------------------------ #
+
+stargazer(train_bog, type = "latex", title = "Estadísticas descriptivas", align = TRUE)
+
 base <- train_bog %>%
   select(price,surface_covered2,bedrooms,bathrooms2,Chapinero,property_type,terraza,parqueadero,
          distancia_parque,distancia_gym,distancia_transmi,distancia_cai,distancia_cc,distancia_bar,distancia_SM,
