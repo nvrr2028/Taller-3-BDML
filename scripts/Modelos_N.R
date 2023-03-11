@@ -224,7 +224,7 @@ pred_test2_ModeloRL <- predict(ModeloRL, newdata = test_bog)
 # Exportar para prueba en Kaggle
 Kaggle_ModeloRL <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloRL)
 write.csv(Kaggle_ModeloRL,"./stores/Kaggle_ModeloRL_N.csv", row.names = FALSE)
-# RMSE = 327172092.77510
+# MAE = 327172092.77510
 
 ### 3.2 Lasso -----------------------------------------------------------------------------------------
 
@@ -254,7 +254,7 @@ pred_test2_Modelolasso <- predict(Modelolasso, newdata = test_bog)
 Kaggle_Modelolasso <- data.frame(property_id=test_bog$property_id, price=pred_test2_Modelolasso)
 write.csv(Kaggle_Modelolasso,"./stores/Kaggle_ModeloLS_N.csv", row.names = FALSE)
 
-# RMSE: 327258864.85935
+# MAE: 327258864.85935
 
 ### 3.3 Elastic net -----------------------------------------------------------------------------------
 ModeloEN<-caret::train(fmla,
@@ -282,7 +282,7 @@ pred_test2_ModeloEN <- predict(ModeloEN, newdata = test_bog)
 # Exportar para prueba en Kaggle
 Kaggle_ModeloEN <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloEN)
 write.csv(Kaggle_ModeloEN,"./stores/Kaggle_ModeloEN_N.csv", row.names = FALSE)
-# RMSE: 298404785.01076
+# MAE: 298404785.01076
 
 ### 3.4 GBM -------------------------------------------------------------------------------------------
 p_load(gbm)
@@ -315,7 +315,7 @@ pred_test2_ModeloGBM <- predict(ModeloGBM, newdata = test_bog)
 # Exportar para prueba en Kaggle
 Kaggle_ModeloGBM <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloGBM)
 write.csv(Kaggle_ModeloGBM,"./stores/Kaggle_ModeloGBM_N.csv", row.names = FALSE)
-# RMSE: 263245024.82436
+# MAE: 263245024.82436
 
 ### 3.5 Ridge -------------------------------------------------------------------------------------------
 grid=10^seq(50,-50,length=1000)
@@ -338,7 +338,7 @@ pred_test2_ModeloRidge <- predict(ModeloRidge, newdata = test_bog)
 # Exportar para prueba en Kaggle
 Kaggle_ModeloRidge <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloRidge)
 write.csv(Kaggle_ModeloRidge,"./stores/Kaggle_ModeloRidge_N.csv", row.names = FALSE)
-# RMSE: 299411431.75789
+# MAE: 299411431.75789
 
 ### 3.5 Superlearner -------------------------------------------------------------------------------------------
 p_load("SuperLearner")
@@ -369,7 +369,7 @@ pred_test2_ModeloSL <- test_bog$yhat_Sup
 # Exportar para prueba en Kaggle
 Kaggle_ModeloSL <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloSL)
 write.csv(Kaggle_ModeloSL,"./stores/Kaggle_ModeloSL_N.csv", row.names = FALSE)
-# RMSE: 279848874.92923
+# MAE: 279848874.92923
 
 ################################   BRAY       ####################################
 p_load("SuperLearner")
