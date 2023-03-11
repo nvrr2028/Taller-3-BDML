@@ -62,6 +62,119 @@ test_bog$bathrooms2 <- ifelse(is.na(test_bog$bathrooms),
 # ------------------------------------------------------------------------------------ #
 # 3. Estadísticas descriptivas
 # ------------------------------------------------------------------------------------ #
+base <- train_bog %>%
+  select(price,surface_covered2,bedrooms,bathrooms2,Chapinero,property_type,terraza,parqueadero,
+         distancia_parque,distancia_gym,distancia_transmi,distancia_cai,distancia_cc,distancia_bar,distancia_SM,
+         distancia_colegios,distancia_universidades,distancia_hospitales) %>% # Seleccionar variables de interés
+  drop_na()
+any(is.na(base)) # No hay datos vacíos
+
+estadisticas10 <- base %>%
+  summarise(across(c(price,surface_covered2,bedrooms,bathrooms2,Chapinero,property_type,terraza,parqueadero,
+                     distancia_parque,distancia_gym,distancia_transmi,distancia_cai,distancia_cc,distancia_bar,distancia_SM,
+                     distancia_colegios,distancia_universidades,distancia_hospitales), 
+                   list(media = mean, desv_est = sd, minimo = min, maximo = max)))
+
+stats <- sapply(base[, c("price","surface_covered2", "bedrooms", "bathrooms2", "Chapinero", "property_type", "terraza", "parqueadero",
+                              "distancia_parque", "distancia_gym", "distancia_transmi", "distancia_cai", "distancia_cc",
+                              "distancia_bar", "distancia_SM", "distancia_colegios", "distancia_universidades", "distancia_hospitales")],
+                summary)
+
+stats_df <- as.data.frame(t(stats))
+stargazer(stats_df, type = "latex", title = "Estadísticas descriptivas", align = TRUE)
+## correlaicones  ##
+
+corrm <- base
+res2 <- rcorr(as.matrix(corrm)) # Coeficientes de correlación
+corrplot(res2$r, type="upper", order="hclust", 
+         p.mat = res2$p, sig.level = 0.05, insig = "blank", tl.col="black") # Las correlaciones no signitificativas se eliminan
+
+## medias de las distancias ##
+media_distancia_parque <- mean(base$distancia_parque)
+media_distancia_gym <- mean(base$distancia_gym)
+media_distancia_transmi <- mean(base$distancia_transmi)
+media_distancia_cai <- mean(base$distancia_cai)
+media_distancia_cc <- mean(base$distancia_cc)
+media_distancia_bar <- mean(base$distancia_bar)
+media_distancia_SM <- mean(base$distancia_SM)
+media_distancia_colegios <- mean(base$distancia_colegios)
+media_distancia_universidades <- mean(base$distancia_universidades)
+media_distancia_hospitales <- mean(base$distancia_hospitales)
+
+# Calcular medias
+medias <- c(media_distancia_parque, media_distancia_gym, media_distancia_transmi, media_distancia_cai, media_distancia_cc, media_distancia_bar, media_distancia_SM, media_distancia_colegios, media_distancia_universidades, media_distancia_hospitales)
+
+# Asignar nombres a las variables
+nombres <- c("distancia_parque", "distancia_gym", "distancia_transmi", "distancia_cai", "distancia_cc", "distancia_bar", "distancia_SM", "distancia_colegios", "distancia_universidades", "distancia_hospitales")
+
+# Reemplazar guiones bajos por espacios y convertir en títulos
+nombres_arreglados <- sapply(nombres, function(x) {
+  x <- gsub("_", " ", x)
+  x <- str_to_title(x)
+  return(x)
+})
+
+# Colores personalizados
+colores <- c("#B0C4DE", "#CAE1FF", "#BCD2EE", "#A2B5CD", "#6E7B8B", "#607B8B", "#8DB6CD", "#A4D3EE", "#B0E2FF", "#87CEFA")
+
+# Graficar
+ggplot(data = data.frame(nombres_arreglados, medias), aes(x = nombres_arreglados, y = medias, fill = nombres_arreglados)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_text(aes(label = round(medias, 2)), vjust = -0.5) + # Agregar etiquetas con los valores de las medias
+  labs(x = "", y = "Media", title = "Media de Distancias a Servicios") +
+  scale_fill_manual(values = rev(colores)) + # Invertir los colores para que vayan de oscuro a claro
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none",
+        legend.title = element_blank())
+### CHAPINERO ####
+# Convertir la variable Chapinero a factor
+base$Chapinero <- as.factor(base$Chapinero)
+
+# Calcular la media de precios por cada valor de la variable Chapinero
+media_precio <- aggregate(base$price, by=list(base$Chapinero), FUN=mean)
+
+# Generar el gráfico
+ggplot(media_precio, aes(x=Group.1, y=x, fill=Group.1)) + 
+  geom_bar(stat="identity") +
+  labs(x="Barrio", y="Precio promedio") +
+  ggtitle("Precio promedio en Chapinero vs Otros barrios") +
+  scale_fill_manual(values = c("#69b3a2", "#404080"))
+
+### Numero de viviendas con terraza y parqueadero 
+parq_count <- table(base$parqueadero)
+terraza_count <- table(base$terraza)
+
+# Crear un data frame con los resultados
+df_count <- data.frame(variable = c(rep("parqueadero", length(parq_count)),
+                                    rep("terraza", length(terraza_count))),
+                       valor = c(as.numeric(parq_count), as.numeric(terraza_count)),
+                       tipo = factor(rep(c("0", "1"), length(parq_count) + length(terraza_count))))
+
+# Graficar el número total de 0 y 1 en cada variable
+
+parq_count <- table(base$parqueadero)
+terraza_count <- table(base$terraza)
+
+# Crear un data frame con los resultados
+df_count <- data.frame(variable = c(rep("parqueadero", length(parq_count)),
+                                    rep("terraza", length(terraza_count))),
+                       valor = c(as.numeric(parq_count), as.numeric(terraza_count)),
+                       Valor = factor(rep(c("0", "1"), length(parq_count) + length(terraza_count))))
+
+# Graficar el número total de 0 y 1 en cada variable
+ggplot(df_count, aes(x = variable, y = valor, fill = Valor)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c("#009ACD", "#00688B")) +
+  labs(x = "", y = "Número de observaciones",
+       fill = "") +
+  ggtitle("Conteo de valores en variables dummy") +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.title = element_text(size = 12, face = "bold"),
+        axis.text = element_text(size = 10),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 10))
 
 # ------------------------------------------------------------------------------------ #
 # 4. Modelos
