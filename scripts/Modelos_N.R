@@ -221,7 +221,7 @@ metrics_ModeloRL <- metrics(eva_ModeloRL, obs, pred); metrics_ModeloRL # Cálcul
 ## Predicción 2: Predicciones con test_hogares
 pred_test2_ModeloRL <- predict(ModeloRL, newdata = test_bog)
 
-# Exportar para prueba en Kaggle
+# Exportar para prueba en Kaggle 
 Kaggle_ModeloRL <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloRL)
 write.csv(Kaggle_ModeloRL,"./stores/Kaggle_ModeloRL_N.csv", row.names = FALSE)
 # MAE = 327172092.77510
@@ -286,7 +286,7 @@ write.csv(Kaggle_ModeloEN,"./stores/Kaggle_ModeloEN_N.csv", row.names = FALSE)
 
 ### 3.4 GBM -------------------------------------------------------------------------------------------
 p_load(gbm)
-grid_gbm<-expand.grid(n.trees=c(300,700,1000),interaction.depth=c(1:4),shrinkage=seq(0.001,0.1,by = 0.001),n.minobsinnode
+grid_gbm<-expand.grid(n.trees=c(300,700,1000),interaction.depth=c(1:4),shrinkage=seq(0.01,0.001),n.minobsinnode
                       =c(10,30, 40))
 
 ModeloGBM <- train(fmla,
