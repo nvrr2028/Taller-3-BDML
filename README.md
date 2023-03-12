@@ -44,46 +44,55 @@ Todas las gráficas se pueden encontrar en la carpeta "views".
 # Data dictionary
 
 # Variable explicada Y 
-#      Ingtotug (continua) - ingreso total de la unidad de gasto antes de imputación de arriendo a propietarios y usufructuarios.
-#      Pobre (discreta) - Pobre=1 No pobre=0
+Price: es el precio de venta del ofertante. Está tomada de la base de los datos recopilados de https://www.properati.com.co.
 
 # Lista de posibles variables explicativas: 
-#      P5000 (discreta) - Incluyendo sala-comedor ¿de cuántos cuartos en total dispone este hogar?
-#      P5010 (discreta) - ¿En cuántos de esos cuartos duermen las personas de este hogar?
-#      P5090 (discreta) - La vivienda ocupada por este hogar es
-#      P5130 (continua) - Si tuviera que pagar arriendo por esta vivienda, ¿cuánto estima que tendría que pagar mensualmente?
-#      P5140 (continua) - ¿Cuánto pagan mensualmente por arriendo?
-#      Nper (continua) - Personas en el hogar
-#      Npersug (continua) - Número de personas en la unidad de gasto
-#      Depto (discreta) - Departamento
-#      prop_P6585s1h - Proporción de personas que recibieron un auxilio de alimentación en el hogar
-#      prop_P6585s3h - Proporción de personas que recibieron un auxilio familiar en el hogar
-#      prop_P7510s3h - Proporción de personas que recibieron dinero de instituciones en el hogar.
-#      prop_P7505h - Proporción de personas que recibieron dinero de otros hogares en el hogar.
-#      prop_P6920h - Proporción de personas en el hogar que estarían cotizando a pensión.
-#      prop_Desh - Proporción de personas en el hogar desempleadas.
-#      prop_Och - Proporción de personas en el hogar empleadas.  
-#      Npobres (continua) - Número de pobres
-#      prop_subsidiado - Proporción de personas en el hogar cotizantes al regimen subsidiado.                
-#      prop_contributivo - Proporción de personas en el hogar cotizantes al regimen contributivo.    
-#      prop_especial - Proporción de personas en el hogar cotizantes al regimen especial.              
-#      prop_ningunoeduc - Proporción de personas en el hogar con ningún nivel de educación.                 
-#      prop_preescolar - Proporción de personas en el hogar con nivel de educación preescolar.                 
-#      prop_basicaprimaria - Proporción de personas en el hogar con nivel de educación básica primaria.            
-#      prop_basicasecundaria - Proporción de personas en el hogar con nivel de educación básica secundaria.           
-#      prop_media - Proporción de personas en el hogar con nivel de educación media.                 
-#      prop_superior - Proporción de personas en el hogar con nivel de educación superior.            
-#      prop_mayoriatiempotrabajo - Proporción de personas en el hogar que pasaron la mayor parte del tiempo trabajando.       
-#      prop_mayoriatiempobuscandotrabajo - Proporción de personas en el hogar que pasaron la mayor parte del tiempo buscando trabajo.  
-#      prop_mayoriatiempoestudiando - Proporción de personas en el hogar que pasaron la mayor parte del tiempo estudiando.
-#      prop_mayoriatiempooficiohogar - Proporción de personas en el hogar que pasaron la mayor parte del tiempo haciendo oficios del hogar.   
-#      prop_mayoriatiempoincapacitado - Proporción de personas en el hogar que pasaron la mayor parte del tiempo incapacitado.
-#      prop_obreroemplempresa - Proporción de personas en el hogar que son empleados de una empresa privada.     
-#      prop_obreroemplgobierno - Proporción de personas en el hogar que son empleados del gobierno.              
-#      prop_empldomestico - Proporción de personas en el hogar que son empleados domésticos.               
-#      prop_trabajadorcuentapropia - Proporción de personas en el hogar que son cuenta propia. 
-#      prop_patronempleador - Proporción de personas en el hogar que son patrón.         
-#      prop_trabajadorsinremunfamilia - Proporción de personas en el hogar que son trabajadores de la familia sin remuneración.
-#      prop_trabajadorsinremunempresa - Proporción de personas en el hogar que son trabajadores de una empresa sin remuneración.
 
+Month: es el mes de publicación de la oferta en https://www.properati.com.co.
 
+Year: es el año de publicación de la oferta en https://www.properati.com.co.
+
+Surface_total: es el área total del terreno en el que se construyó la casa, incluyendo áreas cubiertas y descubiertas, por lo que incluye cualquier área exterior, como un jardín, una entrada de autos o un garaje. Se construyó con extracción de texto de los datos recopilados de https://www.properati.com.co.
+
+Surface_covered: es el área total cubierta de los espacios construidos dentro de la casa. Da cuenta del espacio habitable real dentro de la casa. Se construyó con extracción de texto de los datos recopilados de https://www.properati.com.co.
+
+Rooms: es la cantidad de habitaciones dentro de la propiedad. Es parte de las variables pre-existentes en la base de los datos recopilados de https://www.properati.com.co.
+
+Bedrooms: es la cantidad de cuartos para dormir dentro de la propiedad. Es parte de las variables pre-existentes en la base de los datos recopilados de https://www.properati.com.co.
+
+Bathrooms: es la cantidad de baños dentro de la propiedad. Es parte de las variables pre-existentes en la base de los datos recopilados de https://www.properati.com.co.
+
+Property_type: es el tipo de vivienda. Toma el valor de 1 si es una casa y de 0 si es un apartamento. Es parte de las variables pre-existentes en la base de los datos recopilados de https://www.properati.com.co.
+
+Lat: es la latitud de la coordenada de la vivienda. Es parte de las variables de Open Source Maps (OSM).
+
+Lon: es la longitud de la coordenada de la vivienda. Es parte de las variables de Open Source Maps (OSM).
+
+Chapinero: toma el valor de 1 si la vivienda hace parte de Chapinero y 0 de lo contrario. Se construyó con extracción de texto de los datos recopilados de https://www.properati.com.co. La extracción se programó con múltiples posibles variaciones de los nombres de los barrios de Chapinero.
+
+Terraza: toma el valor de 1 si la vivienda tiene terraza y 0 de lo contrario. Se construyó con extracción de texto de los datos recopilados de https://www.properati.com.co. La extracción se programó con múltiples posibles variaciones para referirse a una terraza, como balcón, balcón o mirador.
+
+Social: toma el valor de 1 si la vivienda cuenta con espacios sociales y 0 de lo contrario. Se construyó con extracción de texto de los datos recopilados de https://www.properati.com.co. La extracción se programó con múltiples posibles variaciones para referirse a espacios sociales, como BBQ, piscina, salón comunal, entre otros
+
+Parqueadero: toma el valor de 1 si la vivienda cuenta con parqueadero y 0 de lo contrario. Se construyó con extracción de texto de los datos recopilados de https://www.properati.com.co. La extracción se programó con múltiples posibles variaciones para referirse a parqueaderos, como cochera o garaje.
+Distancia_parque: es la distancia en metros de la vivienda al parque más cercano. Se construyó utilizando la ubicación de parques de Open Source Maps (OSM).
+Distancia_gym: es la distancia en metros de la vivienda al gimnasio más cercano. Se construyó utilizando la ubicación de gimnasios de Open Source Maps (OSM).
+Distancia_transmi: es la distancia en metros de la vivienda a la estación de bus más cercana. Se construyó utilizando la ubicación de las estaciones de bus de Open Source Maps (OSM).
+
+Distancia_cai: es la distancia en metros de la vivienda al Centro de Atención Inmediata (CAI) más cercano. Se construyó utilizando la ubicación de los police ammenities de Open Source Maps (OSM).
+
+Distancia_gym: es la distancia en metros de la vivienda al XXXXX más cercano. Se construyó utilizando la ubicación de XXXXX de Open Source Maps (OSM).
+
+Distancia_bar: es la distancia en metros de la vivienda al bar más cercano. Se construyó utilizando la ubicación de bares de Open Source Maps (OSM).
+
+Distancia_SM: es la distancia en metros de la vivienda al supermercado más cercano. Se construyó utilizando la ubicación de supermercados de Open Source Maps (OSM).
+
+Distancia_colegios: es la distancia en metros de la vivienda al colegio más cercano. Se construyó utilizando la ubicación de colegios de Open Source Maps (OSM).
+
+Distancia_universidades: es la distancia en metros de la vivienda a la universidad más cercana. Se construyó utilizando la ubicación de universidades de Open Source Maps (OSM).
+
+Distancia_hospitales: es la distancia en metros de la vivienda al hospital más cercano. Se construyó utilizando la ubicación de hospitales de Open Source Maps (OSM).
+
+Surface_covered2: es la superficie cubierta luego de recuperar los valores faltantes con las estimaciones de regresiones lineales en función del número de cuartos para dormir y el tipo de propiedad (si es o no una casa). Se creó añadiendo las estimaciones de las regresiones a la variable de superficie cubierta pre-existente en la base de los datos recopilados de https://www.properati.com.co utilizando dos variables independientes de esta misma base de datos.
+
+Bathrooms2: es la cantidad de baño luego de recuperar los valores faltantes con las estimaciones de regresiones lineales en función del número de cuartos para dormir y el tipo de propiedad (si es o no una casa). Se creó añadiendo las estimaciones de las regresiones a la variable de bañ pre-existente en la base de los datos recopilados de https://www.properati.com.co utilizando dos variables independientes de esta misma base de datos
