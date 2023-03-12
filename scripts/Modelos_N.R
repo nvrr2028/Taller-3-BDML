@@ -371,7 +371,7 @@ Kaggle_ModeloSL <- data.frame(property_id=test_bog$property_id, price=pred_test2
 write.csv(Kaggle_ModeloSL,"./stores/Kaggle_ModeloSL_N.csv", row.names = FALSE)
 # MAE: 279848874.92923
 
-################################   BRAY       ####################################
+
 p_load("SuperLearner")
 sl.lib <- c("SL.glmnet", "SL.lm", "Sl.ridge") #lista de los algoritmos a correr
 
