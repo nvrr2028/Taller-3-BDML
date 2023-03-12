@@ -81,7 +81,7 @@ Distancia_transmi: es la distancia en metros de la vivienda a la estación de bu
 
 Distancia_cai: es la distancia en metros de la vivienda al Centro de Atención Inmediata (CAI) más cercano. Se construyó utilizando la ubicación de los police ammenities de Open Source Maps (OSM).
 
-Distancia_gym: es la distancia en metros de la vivienda al XXXXX más cercano. Se construyó utilizando la ubicación de XXXXX de Open Source Maps (OSM).
+Distancia_gym: es la distancia en metros de la vivienda al centro de entrenamiento físico más cercano. Se construyó utilizando la ubicación de centro de entrenamiento físico de Open Source Maps (OSM).
 
 Distancia_bar: es la distancia en metros de la vivienda al bar más cercano. Se construyó utilizando la ubicación de bares de Open Source Maps (OSM).
 
