@@ -415,7 +415,45 @@ pred_test2_ModeloSuper2 <- test_bog$yhat_Sup
 Kaggle_ModeloSuper2 <- data.frame(property_id=test_bog$property_id, price=pred_test2_ModeloSuper2)
 write.csv(Kaggle_ModeloSuper2,"./stores/Kaggle_ModeloSuper2_N.csv", row.names = FALSE)
 
+#Super lerner 
+p_load("SuperLearner","spatialsample","mlr3")
 
+# Customize the defaults for elastic net
+custom_glmnet <- SuperLearner::create.Learner("SL.glmnet",
+                                              tune = list(alpha = seq(0, 1, length.out=5)))
+custom_glmnet[["names"]]
+custom_glmnet$names
+# Customize the defaults for random forest.
+custom_rf = create.Learner("SL.randomForest",tune = list(mtry = round(c(1, sqrt(4), 3))))
+custom_rf$names
+
+# Customize the defaults for gbm
+custom_gbm <- SuperLearner::create.Learner("SL.gbm",
+                                           tune = list(
+                                             n.trees = c(300, 700),
+                                             interaction.depth = 1:4
+                                           ))
+custom_gbm[["names"]]
+custom_gbm$names
+#An other way of random forest
+mtry_seq    <- seq(2, 5, 1)
+n.trees_seq <- seq(500, 800, 100) 
+learners.ranger <- create.Learner("SL.ranger", tune = list(mtry = mtry_seq, num.trees = n.trees_seq))
+learners.ranger$names
+
+#superlearner 
+sl.lib2 <- c("SL.lm",custom_gbm$names, custom_glmnet$names,learners.ranger$names)
+sl.lib2
+
+ySL<-training$price
+XSL<- training  %>% select(Chapinero,property_type,terraza,parqueadero,
+                           distancia_parque,distancia_cai,distancia_cc,distancia_bar,distancia_SM,
+                           distancia_colegios,distancia_universidades,distancia_hospitales)
+
+fitY_long <- SuperLearner(ySL, XSL,
+                          method = "method.NNLS", SL.library = sl.lib2)
+
+fitY_long
 
 
 
